@@ -166,6 +166,19 @@ button{cursor:pointer;border:0;background:none}
 .adout{margin-top:10px;text-align:center}.adout img{max-width:70%;border-radius:10px;border:1px solid var(--line)}
 .legalft{text-align:center;font-size:11.5px;color:#9aa0c8;margin-top:10px}.legalft a{color:#b9a7ff;cursor:pointer}
 .lgsheet .card{max-height:92vh;overflow:auto}.lgbody h4{font-size:14px;margin:16px 0 6px;color:#e6e3ff}.lgbody p,.lgbody li{font-size:12.8px;line-height:1.5;color:#cfd3f5}.lgbody ul,.lgbody ol{padding-left:18px;margin:4px 0}.lgbody li{margin:3px 0}.lgnote{font-size:12px;padding:9px 11px;border-radius:10px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);color:#fde68a;margin:8px 0}
+.jvfab{position:fixed;left:16px;bottom:18px;z-index:60;display:none;align-items:center;gap:8px;height:52px;padding:0 18px 0 8px;border-radius:999px;border:1px solid rgba(96,165,250,.6);background:linear-gradient(135deg,#1e1b4b,#0b1a3a);color:#e6e3ff;font-weight:800;font-size:14px;box-shadow:0 0 22px rgba(59,130,246,.45);cursor:pointer}
+.jvfab.on{display:flex}.jvfab i{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#60a5fa,#2563eb 60%,#1e3a8a);font-style:normal;font-size:18px;box-shadow:0 0 14px #3b82f6}
+.jvfab.live i{animation:jvp 1.1s infinite}@keyframes jvp{0%,100%{box-shadow:0 0 6px #3b82f6}50%{box-shadow:0 0 26px #60a5fa,0 0 50px #2563eb}}
+.jvs .card{max-height:92vh;display:flex;flex-direction:column}.jvlog{flex:1;min-height:180px;max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:6px 2px;margin:8px 0}
+.jvm{max-width:86%;padding:10px 12px;border-radius:14px;font-size:14px;line-height:1.4}.jvm.u{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-right-radius:4px}.jvm.j{align-self:flex-start;background:rgba(124,58,237,.18);border:1px solid rgba(139,92,246,.4);color:#e6e3ff;border-bottom-left-radius:4px}
+.jvorb{width:96px;height:96px;margin:6px auto;border-radius:50%;border:0;display:grid;place-items:center;font-size:34px;color:#fff;background:radial-gradient(circle at 35% 30%,#93c5fd,#2563eb 55%,#1e1b4b);box-shadow:0 0 24px rgba(59,130,246,.6);cursor:pointer}
+.jvorb.live{animation:jvp 1.1s infinite;background:radial-gradient(circle at 35% 30%,#fca5a5,#ef4444 55%,#450a0a)}.jvorb.think{animation:jvp .6s infinite}
+.jvst{text-align:center;font-size:12.5px;color:#9aa0c8;min-height:18px}.jvrow{display:flex;gap:8px;margin-top:8px}.jvrow input{flex:1;height:46px;border-radius:12px;border:1px solid var(--line);background:rgba(5,6,18,.6);color:#e6e3ff;padding:0 12px;font-size:14px}
+.jvrow button{height:46px;padding:0 16px;border-radius:12px;border:0;background:#7c3aed;color:#fff;font-weight:800}.jvopt{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#cfd3f5;margin-top:10px}.jvopt label{display:flex;gap:6px;align-items:center}
+.dstinfo{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:rgba(124,58,237,.12);border:1px solid rgba(139,92,246,.45);font-size:13px;color:#e6e3ff}.dstsw{display:flex;gap:4px;margin-top:6px}.dstsw span{width:18px;height:18px;border-radius:5px;border:1px solid rgba(255,255,255,.4)}
+.jvsel{width:100%;height:44px;border-radius:12px;border:1px solid var(--line);background:rgba(5,6,18,.6);color:#e6e3ff;padding:0 10px;font-size:14px}
+.sbchip{position:fixed;top:10px;left:12px;z-index:60;display:none;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:11.5px;font-weight:700;background:rgba(5,6,18,.8);border:1px solid var(--line);color:#cfd3f5}.sbchip.on{display:flex}.sbchip i{width:8px;height:8px;border-radius:50%;background:#9aa0c8}.sbchip.ok i{background:#22c55e;box-shadow:0 0 8px #22c55e}.sbchip.err i{background:#ef4444}
+.livec{display:flex;gap:12px;align-items:center;padding:12px 14px;margin-bottom:12px;border-radius:16px;border:1px solid var(--line);background:rgba(5,6,18,.6)}.livec.run{border-color:rgba(34,197,94,.6)}.livec .dot{width:12px;height:12px;border-radius:50%;background:#ef4444;flex:none}.livec.run .dot{background:#22c55e;box-shadow:0 0 10px #22c55e}.livec.off .dot{background:#6b7280}.livec b{font-size:14px}.livec small{display:block;color:#9aa0c8;font-size:12px;margin-top:2px}.livec .pt{margin-left:auto;text-align:right;font-weight:800;font-size:16px}
 .sheet{position:fixed;inset:0;z-index:28;display:none;align-items:flex-end;justify-content:center;background:rgba(2,3,10,.7);backdrop-filter:blur(4px)}
 .sheet.on{display:flex}
 .sheet .card{width:100%;max-width:520px;border-radius:22px 22px 0 0;padding-bottom:calc(22px + env(safe-area-inset-bottom));animation:up .3s ease}
@@ -1120,6 +1133,7 @@ button{cursor:pointer;border:0;background:none}
     </div>
     <div class="pcol">
       <div class="block"><div class="bt">Alertas</div><div id="p-alerts"></div></div>
+      <div id="sb-live"></div>
       <div class="block"><div class="bth"><div class="bt" style="margin:0">Pedidos activos</div><span class="mini-l" style="margin:0" id="p-ordn"></span></div><div id="p-orders"></div></div>
       <div class="block"><div class="bt">Accesos rápidos</div>
         <div class="quick">
@@ -1190,7 +1204,7 @@ button{cursor:pointer;border:0;background:none}
   <div class="h1 grad">Sube tu diseño</div>
   <div class="sub">Tu logo o dibujo. Lo preparamos <b style="color:#4ade80">gratis</b> para que salga bien bordado o impreso.</div>
   <div class="upopts">
-    <label class="upo on"><input type="file" accept="image/*" id="c-file" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg><b>Subir archivo</b><span>PNG, JPG</span></label>
+    <label class="upo on"><input type="file" accept="image/*,.dst,.DST" id="c-file" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg><b>Subir archivo</b><span>PNG, JPG o DST</span></label>
     <label class="upo"><input type="file" accept="image/*" capture="environment" id="c-cam" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg><b>Tomar foto</b><span>Desde tu cámara</span></label>
     <button class="upo" id="c-sample"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 7h6l2 2h10v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><b>Diseño de ejemplo</b><span>Para probar</span></button>
   </div>
@@ -1456,7 +1470,7 @@ const defaults={tipo:null,cuenta:{},datos:{},maq:[],emp:[]};
 let S;
 try{S=JSON.parse(localStorage.getItem(KEY))||null}catch(e){S=null}
 if(!S)S=JSON.parse(JSON.stringify(defaults));
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{S._ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}if(window.sbPush)sbPush()};
 const ARO=2;S.maq.forEach(m=>{if(/Bordadora/.test(m.tipo)&&!m.vel)m.vel=650});
 S.maq.forEach(m=>{if(/Bordadora/.test(m.tipo)&&!m.heads)m.heads=1;if(!m.op)m.op='Al 100%'});
 const bordasOK=()=>S.maq.filter(m=>/Bordadora/.test(m.tipo)&&(m.op||'Al 100%')==='Al 100%');
@@ -1481,7 +1495,7 @@ $$('.screen[data-step]').forEach(sc=>{
 });
 
 /* navegación */
-function go(id){if(id==='s-lib'&&curScreen!=='s-lib'&&curScreen!=='s-mkt')libFrom=curScreen||'s-c1';if(id==='s-mkt'&&curScreen!=='s-mkt')mktFrom=curScreen||'s-c1';$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo({top:0,behavior:'instant'});curScreen=id;hb.classList.toggle('on',!!HELP[id]);$('.app').classList.toggle('wide',id==='s-panel'||id==='s-op');$('.app').classList.toggle('opw',id==='s-op');
+function go(id){if(id==='s-lib'&&curScreen!=='s-lib'&&curScreen!=='s-mkt')libFrom=curScreen||'s-c1';if(id==='s-mkt'&&curScreen!=='s-mkt')mktFrom=curScreen||'s-c1';$$('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo({top:0,behavior:'instant'});curScreen=id;hb.classList.toggle('on',!!HELP[id]);if(window.jvShow)jvShow(id);$('.app').classList.toggle('wide',id==='s-panel'||id==='s-op');$('.app').classList.toggle('opw',id==='s-op');
   ({'s-rep':renderRep,'s-plan':renderPlan,'s-chome':renderCHome,'s-tpl':renderTpl,'s-clogin':()=>{if(S.cliAcc)go('s-chome')},'s-lib':()=>{if(curScreen!=='s-lib'){} renderLib()},'s-mkt':renderMkt,'s-red':renderRed,'s-c1':()=>{cbiz();paintC1();$('#c-closed').style.display=S.shop===false?'':'none'},'s-c2':renderC2,'s-c3':renderC3,'s-c4':renderC4,'s-c5':renderC5,'s-oplogin':renderOpLogin,'s-op':renderOp,'s-panel':renderPanel,'s-cat':renderCat,'s-listo':renderListo,'s-fijos':renderFijos,'s-var':renderVar,'s-precios':renderPrecios,'s-diag':renderDiag}[id]||(()=>{}))()}
 $$('[data-next]').forEach(b=>b.addEventListener('click',()=>{if(b.dataset.next==='s-precios'&&!S.prod.length){toast('Agrega al menos un producto');return}nav(b.dataset.next)}));
 $$('[data-go]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();nav(b.dataset.go)}));
@@ -1512,6 +1526,7 @@ $('#f-login').addEventListener('submit',e=>{
   const g1=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value.trim()), g2=pw.value.length>=1;
   $('#li-email').classList.toggle('err',!g1);$('#li-pass').classList.toggle('err',!g2);
   if(!g1||!g2){toast('Escribe tu correo y contraseña');return}
+  if(window.sbLogin)sbLogin(em.value.trim(),pw.value);
   if(S.tipo&&S.datos.nombre&&S.prod){go('s-panel')}else if(S.tipo&&S.datos.nombre){go('s-fijos')}else{S.cuenta.email=em.value.trim();save();toast('Prototipo: simulamos el acceso y seguimos con tu configuración');go('s-tipo')}
 });
 
@@ -1901,7 +1916,8 @@ function renderPanel(){
   const firstDemo=orders.find(o=>!o.real);const nReal=orders.filter(o=>o.real).length;$('#p-ordn').textContent=orders.length?(nReal?nReal+' real'+(nReal>1?'es':'')+' · ':'')+(orders.length-nReal)+' de ejemplo':'';
   PORD=orders;$('#p-orders').innerHTML=orders.length?orders.map((o,i)=>'<div class="ord"><div class="oi">'+(o.p.foto?'<img src="'+o.p.foto+'" alt="">':ph)+'</div><div class="tx"><b>'+esc(o.cli)+'</b><span>'+o.folio+' · '+esc(o.p.n)+(o.q?' × '+o.q:'')+'</span><span class="badge '+(o===firstDemo?'b-red':o.est[1])+'">'+(o===firstDemo?'Retrasado':o.est[0])+'</span>'+adAct(o,i)+'</div><div class="rt"><b>'+$f(o.tot)+'</b><span class="mini-l" style="margin:2px 0 0">'+(o.q?$f(o.pu)+' c/u':'digital')+'</span></div></div>').join(''):'<div class="explain">Agrega productos con precio a tu catálogo para ver pedidos de ejemplo.</div>';
 }
-$('#s-panel').addEventListener('click',e=>{const ab=e.target.closest('[data-ad]');if(ab){const o=PORD[+ab.dataset.ad];openAd({type:'trabajo',p:o.p,img:o.img,cli:o.cli});return}
+$('#s-panel').addEventListener('click',e=>{const cb=e.target.closest('[data-cola]');if(cb){sbCola(PORD[+cb.dataset.cola]);return}
+  const ab=e.target.closest('[data-ad]');if(ab){const o=PORD[+ab.dataset.ad];openAd({type:'trabajo',p:o.p,img:o.img,cli:o.cli});return}
   const pa=e.target.closest('[data-perm-ask]');if(pa){S.permAsk=S.permAsk||{};S.permAsk[pa.dataset.permAsk]=Date.now();save();renderPanel();toast('Se abriría WhatsApp del cliente: “¿Nos dejas mostrar tu trabajo en nuestras redes?”');return}
   const pk=e.target.closest('[data-perm-ok]');if(pk){S.permOK=S.permOK||{};S.permOK[pk.dataset.permOk]={t:Date.now()};save();renderPanel();toast('Permiso registrado con fecha. Ya puedes publicarlo.');return}
 if(e.target.closest('#p-shop')){S.shop=S.shop===false;save();renderPanel();toast(S.shop?'Tienda abierta':'Tienda en pausa');return}if(e.target.closest('#p-plan,#p-planbtn')){planFrom='s-panel';go('s-plan');return}
@@ -2040,7 +2056,24 @@ function cbiz(){$$('.cbiz').forEach(e=>e.textContent=S.datos.nombre||'Taller Bor
 
 /* --- paso 1: subir y preparar --- */
 function loadImg(src){const img=new Image();img.onload=()=>{S.cli.ow=img.width;S.cli.oh=img.height;const s=Math.min(1,700/Math.max(img.width,img.height)),cv=document.createElement('canvas');cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);const x=cv.getContext('2d');x.drawImage(img,0,0,cv.width,cv.height);origData=x.getImageData(0,0,cv.width,cv.height);S.cli.bg=detectBg(origData);S.cli.enh=true;processImg();toast('Diseño cargado')};img.src=src}
-function readFile(f){if(!f||!/^image\//.test(f.type)){toast('Sube una imagen PNG o JPG');return}const r=new FileReader();r.onload=()=>loadImg(r.result);r.readAsDataURL(f)}
+function readFile(f){if(f&&/\.dst$/i.test(f.name)){const r=new FileReader();r.onload=()=>{const d=dstRender(r.result,f.name);if(!d){toast('Ese DST no se pudo leer');return}S.cli.dst=d.info;dstInfo();loadImg(d.url);toast('DST leído: '+d.info.punt.toLocaleString('es-MX')+' puntadas exactas')};r.readAsArrayBuffer(f);return}
+  if(!f||!/^image\//.test(f.type)){toast('Sube una imagen PNG, JPG o un archivo DST');return}S.cli.dst=null;dstInfo();const r=new FileReader();r.onload=()=>loadImg(r.result);r.readAsDataURL(f)}
+/* lector de DST (Tajima): puntadas exactas, colores, medidas y vista previa */
+const DST_PAL=['#e53935','#1e88e5','#fdd835','#43a047','#fb8c00','#8e24aa','#6d4c41','#f48fb1','#00acc1','#9e9e9e','#ffffff','#212121'];
+function dstPaso(b0,b1,b2){let x=0,y=0;if(b0&1)x+=1;if(b0&2)x-=1;if(b0&4)x+=9;if(b0&8)x-=9;if(b0&128)y+=1;if(b0&64)y-=1;if(b0&32)y+=9;if(b0&16)y-=9;
+  if(b1&1)x+=3;if(b1&2)x-=3;if(b1&4)x+=27;if(b1&8)x-=27;if(b1&128)y+=3;if(b1&64)y-=3;if(b1&32)y+=27;if(b1&16)y-=27;if(b2&4)x+=81;if(b2&8)x-=81;if(b2&32)y+=81;if(b2&16)y-=81;return[x,y]}
+function dstRender(buf,nombre){const d=new Uint8Array(buf);if(d.length<515)return null;const hdr=String.fromCharCode.apply(null,d.slice(0,512));
+  const la=(hdr.match(/LA:([^\r\n]*)/)||[])[1];const st=+((hdr.match(/ST:\s*(\d+)/)||[])[1]||0);
+  const pts=[];let x=0,y=0,col=0,punt=0,mnx=0,mxx=0,mny=0,mxy=0;const cp=[0];
+  for(let i=512;i+2<d.length;i+=3){const b0=d[i],b1=d[i+1],b2=d[i+2];if(b0===0&&b1===0&&(b2&0xF3)===0xF3)break;const[dx,dy]=dstPaso(b0,b1,b2);x+=dx;y+=dy;
+    let tp=(b2&0xC0)===0xC0?2:(b2&0x80)?1:0;if(tp===2){col++;cp[col]=0}else if(tp===0){punt++;cp[col]=(cp[col]||0)+1}
+    pts.push([x,y,tp,col]);if(x<mnx)mnx=x;if(x>mxx)mxx=x;if(y<mny)mny=y;if(y>mxy)mxy=y}
+  if(!punt)return null;const W=mxx-mnx||1,H=mxy-mny||1,S2=900,sc=(S2-40)/Math.max(W,H),cw=Math.round(W*sc+40),ch=Math.round(H*sc+40);
+  const cv=document.createElement('canvas');cv.width=cw;cv.height=ch;const g=cv.getContext('2d');g.lineCap='round';g.lineJoin='round';g.lineWidth=Math.max(1.6,sc*3.2);
+  let px=null,py=null;pts.forEach(([X,Y,tp,c])=>{const nx=20+(X-mnx)*sc,ny=ch-20-(Y-mny)*sc;if(tp===0&&px!==null){g.strokeStyle=DST_PAL[c%12];g.beginPath();g.moveTo(px,py);g.lineTo(nx,ny);g.stroke()}px=nx;py=ny});
+  return{url:cv.toDataURL('image/png'),info:{punt,cols:col+1,w:Math.round(W)/100,h:Math.round(H)/100,st,name:(la||'').trim()||nombre.replace(/\.dst$/i,''),cp}}}
+function dstInfo(){const up=$('#c-file').closest('.upo');if(!up)return;let el=$('#c-dstinfo');if(!el){el=document.createElement('div');el.id='c-dstinfo';el.className='dstinfo';up.parentNode.insertAdjacentElement('afterend',el)}
+  const d=S.cli.dst;el.style.display=d?'':'none';if(d)el.innerHTML='🧵 <b>'+esc(d.name)+'</b> · '+d.punt.toLocaleString('es-MX')+' puntadas exactas · '+d.cols+' color'+(d.cols>1?'es':'')+' · '+d.w.toFixed(1)+' × '+d.h.toFixed(1)+' cm<div class="dstsw">'+d.cp.slice(0,12).map((n,i)=>'<span style="background:'+DST_PAL[i%12]+'" title="'+n+' pt"></span>').join('')+'</div><span class="mini-l" style="margin:4px 0 0;display:block">Colores de ejemplo: el DST solo guarda el orden de los cambios.</span>'}
 ['c-file','c-cam'].forEach(id=>$('#'+id).addEventListener('change',e=>{readFile(e.target.files[0]);e.target.value=''}));
 const dz=$('#c-dz');['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
 dz.addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
@@ -2073,7 +2106,7 @@ function analyze(d){const a=d.data,cnt={};let px=0,tr=0;for(let i=0;i<a.length;i
 /* estimado de puntadas: ancho × alto (cm) × densidad */
 const SIZECM={'Chico':7,'Mediano':12,'Grande':20,'Espalda completa':30};
 function densOf(cov){return cov>=.72?[225,'Relleno sólido']:cov>=.42?[160,'Cobertura media']:[115,'Diseño abierto / letras']}
-function estPunt(sizeName){const an=S.cli.an||{cov:.55,asp:1};const L=SIZECM[sizeName]||10;let w=L,h=L*an.asp;if(an.asp>1){h=L;w=L/an.asp}
+function estPunt(sizeName){if(S.cli.dst)return{w:S.cli.dst.w,h:S.cli.dst.h,d:0,lab:'exactas del DST',punt:S.cli.dst.punt};const an=S.cli.an||{cov:.55,asp:1};const L=SIZECM[sizeName]||10;let w=L,h=L*an.asp;if(an.asp>1){h=L;w=L/an.asp}
   const [d,lab]=densOf(an.cov);return{w,h,d,lab,punt:Math.max(500,Math.round(w*h*d/100)*100)}}
 function paintC1(){
   const has=!!S.cli.img;$('#c-dz').classList.toggle('has',has);$('#c1-next').disabled=!has;
@@ -2639,7 +2672,8 @@ $('#s-c5').addEventListener('click',e=>{const o=S.clientOrders.find(x=>x.folio==
 
 /* ===== anuncios automáticos (regalo de la membresía) ===== */
 let PORD=[];
-function adAct(o,i){S.permOK=S.permOK||{};S.permAsk=S.permAsk||{};const ok=o.real?(o.permPub||S.permOK[o.folio]):(i%2===0||S.permOK[o.folio]);
+function adAct(o,i){return adAct0(o,i)+(sbSes()?'<button class="adbtn ghost" data-cola="'+i+'">⚙️ Mandar a máquina</button>':'')}
+function adAct0(o,i){S.permOK=S.permOK||{};S.permAsk=S.permAsk||{};const ok=o.real?(o.permPub||S.permOK[o.folio]):(i%2===0||S.permOK[o.folio]);
   if(ok)return '<button class="adbtn" data-ad="'+i+'">📣 Publicar este trabajo</button>';
   if(S.permAsk[o.folio])return '<button class="adbtn ghost" data-perm-ok="'+o.folio+'">⏳ Esperando permiso · ya autorizó</button>';
   return '<button class="adbtn ghost" data-perm-ask="'+o.folio+'">🔒 Pedir permiso para publicar</button>'}
@@ -2713,6 +2747,141 @@ const lgS=document.createElement('div');lgS.className='sheet lgsheet';document.b
 function openLegal(k){lgS.innerHTML='<div class="card"><div class="h1" style="font-size:19px">Legal</div><div class="seg" style="margin-top:8px"><button data-lg="t" class="'+(k==='t'?'on':'')+'">Términos</button><button data-lg="p" class="'+(k==='p'?'on':'')+'">Privacidad</button></div><div class="lgbody">'+$('#legal-'+k).innerHTML+'</div><div class="btns"><button class="btn btn-main" data-close>Entendido</button></div></div>';lgS.classList.add('on');lgS.querySelector('.card').scrollTop=0}
 lgS.addEventListener('click',e=>{if(e.target===lgS||e.target.closest('[data-close]')){lgS.classList.remove('on');return}const b=e.target.closest('[data-lg]');if(b)openLegal(b.dataset.lg)});
 document.addEventListener('click',e=>{const a=e.target.closest('[data-legal]');if(a&&!lgS.contains(a)){e.preventDefault();e.stopPropagation();openLegal(a.dataset.legal)}},true);
+
+
+/* ===== JARVIS: asistente de voz del taller (Gemini) ===== */
+const JV_MODEL='gemini-flash-latest';
+const jvGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},jvSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let jvHist=[],jvRec=null,jvBusy=false,jvListening=false;
+const jvConv=()=>jvGet('bl-jv-conv')!=='0',jvAvisos=()=>jvGet('bl-jv-avisos')!=='0';
+const jvFab=document.createElement('button');jvFab.className='jvfab';jvFab.innerHTML='<i>🎙️</i>Jarvis';document.body.appendChild(jvFab);
+const jvS=document.createElement('div');jvS.className='sheet jvs';document.body.appendChild(jvS);
+const JV_SCREENS=['s-panel','s-rep','s-cat','s-red','s-plan'];
+window.jvShow=id=>{jvFab.classList.toggle('on',JV_SCREENS.includes(id));if(id==='s-panel')setTimeout(jvNuevos,600)};
+function jvCtx(){const L=[];const t=totals(),orders=demoOrders();
+  L.push('Taller: '+(S.datos.nombre||'sin nombre')+(S.datos.dir?'. Dirección: '+S.datos.dir:'')+(S.datos.tel?'. WhatsApp: '+S.datos.tel:'')+'. Dueño: '+(S.cuenta.nombre||'')+'. Tipo: '+(S.tipo||'Bordado')+'. Fecha y hora: '+new Date().toLocaleString('es-MX')+'.');
+  L.push('Máquinas: '+((S.maq||[]).map(m=>(m.nombre||m.tipo)+' ('+(m.heads?m.heads+' cabezas, '+m.cols+' colores, ':'')+(m.year||'')+', '+(m.op||m.est||'')+')').join('; ')||'ninguna registrada')+'.');
+  L.push('Empleados: '+((S.emp||[]).map(e=>e.nombre+' ('+e.rol+', pago '+e.ptype+')').join('; ')||'ninguno')+'. Pago por puntadas: $'+(S.tarifaMil||1)+' por cada 1,000.');
+  L.push('Pedidos ('+orders.length+'): '+orders.slice(0,15).map(o=>o.folio+' de '+o.cli+': '+(o.p?o.p.n:'')+' x'+o.q+', total '+$f(o.tot)+', estado '+o.est[0]).join('; ')+'.');
+  L.push('Catálogo: '+S.prod.filter(p=>p.activo!==false).slice(0,12).map(p=>p.n+' '+$f(num(p.precio))+(p.u&&p.u!=='pieza'?'/'+p.u:'')).join('; ')+'.');
+  L.push('Números del mes (proyectados con el catálogo): ventas '+$f(t.V)+', ganancia '+$f(t.U)+'. Tienda '+(S.shop===false?'en pausa':'abierta')+'.');
+  if((S.opDelays||[]).length)L.push('Retrasos registrados por operadores: '+S.opDelays.length+'.');
+  return 'Eres Jarvis, el asistente de voz del taller de bordado BordaLink de '+((S.cuenta.nombre||'').split(' ')[0]||'el dueño')+'. Hablas en español de México, cálido y directo, como un asistente personal. Tus respuestas se leen en voz alta: usa frases cortas (1 a 3), sin listas, sin símbolos, sin emojis ni markdown; di las cantidades como se dicen en voz alta. Usa solo los datos de abajo; si algo no está, dilo y propón cómo saberlo. Puedes dar consejos del oficio (bordado, DTF, precios, tiempos a 650 puntadas por minuto). Mantén la plática fluida y, cuando ayude, haz una pregunta de seguimiento.\nDATOS DEL TALLER AHORA:\n'+L.join('\n')}
+function jvLog(who,txt){const lg=jvS.querySelector('.jvlog');if(!lg)return;const d=document.createElement('div');d.className='jvm '+who;d.textContent=txt;lg.appendChild(d);lg.scrollTop=lg.scrollHeight}
+function jvStatus(s,cls){const st=jvS.querySelector('.jvst'),o=jvS.querySelector('.jvorb');if(st)st.textContent=s;if(o){o.classList.toggle('live',cls==='live');o.classList.toggle('think',cls==='think')}jvFab.classList.toggle('live',!!cls)}
+function jvVoz(){const vs=speechSynthesis.getVoices(),el=jvGet('bl-jv-dvoz');const sel=el&&vs.find(v=>v.voiceURI===el);if(sel)return sel;return vs.find(v=>/es-MX/i.test(v.lang)&&/natural|neural|online|google/i.test(v.name))||vs.find(v=>/es-MX/i.test(v.lang))||vs.find(v=>/es-US/i.test(v.lang))||vs.find(v=>/^es/i.test(v.lang))}
+const JV_GVOCES=[['Charon','Charon · grave y tranquila (recomendada)'],['Orus','Orus · firme y segura'],['Fenrir','Fenrir · enérgica'],['Puck','Puck · alegre'],['Iapetus','Iapetus · clara'],['Algenib','Algenib · ronca'],['Kore','Kore · femenina firme'],['Aoede','Aoede · femenina suave'],['Zephyr','Zephyr · femenina brillante']];
+const JV_TTS=['gemini-3.1-flash-tts-preview','gemini-2.5-flash-preview-tts'];
+let jvCtxA=null,jvSrc=null;
+const jvModo=()=>jvGet('bl-jv-modo')||'real';
+function jvParar(){try{speechSynthesis.cancel()}catch(e){}try{jvSrc&&jvSrc.stop()}catch(e){}jvSrc=null}
+async function jvGemVoz(txt){const key=jvGet('bl-jv-key');if(!key)throw 0;const voz=jvGet('bl-jv-gvoz')||'Charon';const lista=[jvGet('bl-jv-ttsm')].filter(Boolean).concat(JV_TTS);
+  for(const m of [...new Set(lista)]){const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},
+      body:JSON.stringify({contents:[{parts:[{text:'Lee en español de México, con voz natural, cálida y segura de asistente personal: '+txt}]}],generationConfig:{responseModalities:['AUDIO'],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voz}}}}})});
+    if(r.status===404||r.status===400){continue}if(!r.ok)throw r.status;const d=await r.json();const p=(((d.candidates||[])[0]||{}).content||{}).parts||[];const a=p.find(x=>x.inlineData);if(!a)throw 0;
+    jvSet('bl-jv-ttsm',m);const rate=+((a.inlineData.mimeType||'').match(/rate=(\d+)/)||[])[1]||24000;const bin=atob(a.inlineData.data),n=bin.length>>1,f=new Float32Array(n);
+    for(let i=0;i<n;i++){let v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8);if(v>32767)v-=65536;f[i]=v/32768}
+    jvCtxA=jvCtxA||new (window.AudioContext||window.webkitAudioContext)();if(jvCtxA.state==='suspended')await jvCtxA.resume();
+    const ab=jvCtxA.createBuffer(1,n,rate);ab.copyToChannel(f,0);return ab}
+  throw 404}
+async function jvHablar(txt,despues){jvParar();
+  if(jvModo()==='real'&&jvGet('bl-jv-key')){jvStatus('Preparando voz…','think');try{const ab=await jvGemVoz(txt);jvSrc=jvCtxA.createBufferSource();jvSrc.buffer=ab;jvSrc.connect(jvCtxA.destination);
+      jvSrc.onended=()=>{jvSrc=null;jvStatus('');if(despues)despues()};jvStatus('Hablando…','think');jvSrc.start();return}
+    catch(e){if(!jvHablar.av){jvHablar.av=1;toast(e===429?'Se acabó el límite gratis de la voz realista por hoy; uso la voz del aparato.':'La voz realista no respondió; uso la voz del aparato.')}}}
+  jvHablarDev(txt,despues)}
+function jvHablarDev(txt,despues){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);const v=jvVoz();if(v)u.voice=v;u.lang=v?v.lang:'es-MX';u.rate=1.05;
+  u.onstart=()=>jvStatus('Hablando…','think');u.onend=()=>{jvStatus('');if(despues)despues()};speechSynthesis.speak(u)}catch(e){if(despues)despues()}}
+async function jvPreguntar(txt){const key=jvGet('bl-jv-key');if(!key){jvAjustes();return}
+  if(jvBusy)return;jvBusy=true;jvLog('u',txt);jvHist.push({role:'user',parts:[{text:txt}]});jvHist=jvHist.slice(-14);jvStatus('Pensando…','think');
+  let resp='';try{const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+JV_MODEL+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({system_instruction:{parts:[{text:jvCtx()}]},contents:jvHist})});
+    const d=await r.json();
+    if(!r.ok){resp=r.status===400||r.status===403?'Mi clave de Gemini no funciona. Revísala en ajustes.':r.status===429?'Llegué al límite gratis de Gemini por ahora. Intenta en un rato.':'Gemini no respondió ('+r.status+').';jvHist.pop()}
+    else{resp=((d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)||[]).filter(p=>!p.thought).map(p=>p.text||'').join('').replace(/[*#_`]/g,'').trim()||'No entendí, ¿me lo repites?';jvHist.push({role:'model',parts:[{text:resp}]})}
+  }catch(e){resp='No me pude conectar. Revisa el internet.';jvHist.pop()}
+  jvBusy=false;jvLog('j',resp);const fin=/\b(gracias|adi[oó]s|hasta luego|es todo)\b/i.test(txt);
+  jvHablar(resp,()=>{if(jvConv()&&!fin&&jvS.classList.contains('on'))jvEscuchar()})}
+function jvEscuchar(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){jvStatus('Este navegador no reconoce voz: escríbeme abajo. En Chrome de Android sí funciona.');return}
+  if(jvListening){try{jvRec.stop()}catch(e){}return}
+  jvParar();
+  jvRec=new SR();jvRec.lang='es-MX';jvRec.interimResults=true;jvRec.maxAlternatives=1;let final='';
+  jvRec.onstart=()=>{jvListening=true;jvStatus('Te escucho…','live')};
+  jvRec.onresult=e=>{let tmp='';for(let i=e.resultIndex;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)final+=r[0].transcript;else tmp+=r[0].transcript}jvStatus((final+tmp)||'Te escucho…','live')};
+  jvRec.onerror=e=>{jvListening=false;jvStatus(e.error==='not-allowed'||e.error==='service-not-allowed'?'Permite el micrófono. Si estás dentro de Claude, ábrelo en bordalink.github.io.':e.error==='no-speech'?'No te escuché. Toca el círculo para hablar.':'Error de micrófono: '+e.error)};
+  jvRec.onend=()=>{jvListening=false;if(final.trim())jvPreguntar(final.trim());else if(jvS.querySelector('.jvst').textContent.startsWith('Te escucho'))jvStatus('Toca el círculo para hablar.')};
+  try{jvRec.start()}catch(e){jvStatus('No pude abrir el micrófono.')}}
+function jvAbrir(){jvS.innerHTML='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h1" style="font-size:20px">🎙️ Jarvis</div><button class="lnk" data-jv="aj" style="background:none;border:0;color:#b9a7ff;font-size:13px">⚙️ Ajustes</button></div><div class="sub" style="margin:2px 0 0">Tu asistente del taller. Pregúntale por pedidos, piezas, máquinas o precios.</div>'
+  +'<div class="jvlog"></div><button class="jvorb" data-jv="mic">🎙️</button><div class="jvst">Toca el círculo y habla</div>'
+  +'<div class="jvrow"><input id="jv-in" placeholder="O escríbele aquí…"><button data-jv="send">Enviar</button></div>'
+  +'<div class="jvopt"><label><input type="checkbox" id="jv-conv" '+(jvConv()?'checked':'')+'> Conversación continua</label><label><input type="checkbox" id="jv-av" '+(jvAvisos()?'checked':'')+'> Avisarme pedidos nuevos por voz</label></div>'
+  +'<div class="btns"><a class="lnk" data-close>Cerrar</a></div></div>';
+  jvHist.forEach(m=>jvLog(m.role==='user'?'u':'j',m.parts[0].text));jvS.classList.add('on');
+  if(!jvGet('bl-jv-key'))jvAjustes();else if(!jvHist.length){const n=(S.cuenta.nombre||'').split(' ')[0];const s='Hola'+(n?' '+n:'')+', soy Jarvis. ¿En qué te ayudo?';jvLog('j',s);jvHablar(s,()=>{if(jvConv())jvEscuchar()})}}
+function jvAjustes(){const k=jvGet('bl-jv-key')||'';jvS.innerHTML='<div class="card"><div class="h1" style="font-size:20px">⚙️ Ajustes de Jarvis</div><div class="sub">Jarvis piensa con Gemini de Google. Pega aquí tu clave de Google AI Studio.</div>'
+  +'<div class="field"><label>Clave de Gemini</label><div class="inp"><input id="jv-key" type="password" value="'+esc(k)+'" placeholder="Pega tu clave"></div></div>'
+  +'<div class="field"><label>Voz de Jarvis</label><select class="jvsel" id="jv-modo"><option value="real" '+(jvModo()==='real'?'selected':'')+'>Realista (voz de Gemini, suena humana)</option><option value="dev" '+(jvModo()==='dev'?'selected':'')+'>Del aparato (gratis, sin límite)</option></select></div>'
+  +'<div class="field" id="jv-gv" style="'+(jvModo()==='real'?'':'display:none')+'"><label>Voz realista</label><select class="jvsel" id="jv-gvoz">'+JV_GVOCES.map(v=>'<option value="'+v[0]+'" '+((jvGet('bl-jv-gvoz')||'Charon')===v[0]?'selected':'')+'>'+v[1]+'</option>').join('')+'</select></div>'
+  +'<div class="field" id="jv-dv" style="'+(jvModo()==='dev'?'':'display:none')+'"><label>Voz del aparato</label><select class="jvsel" id="jv-dvoz"><option value="">Automática (español de México)</option>'+speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)).map(v=>'<option value="'+esc(v.voiceURI)+'" '+(jvGet('bl-jv-dvoz')===v.voiceURI?'selected':'')+'>'+esc(v.name)+' ('+v.lang+')</option>').join('')+'</select></div>'
+  +'<button class="btn btn-ghost" data-jv="probar" style="margin-bottom:10px">🔊 Probar voz</button>'
+  +'<div class="mini-l">🔒 La clave se guarda solo en este aparato. No queda en el código de la app ni en GitHub. Si alguien más usará Jarvis en otra tablet, pégala ahí también.</div>'
+  +'<div class="btns"><button class="btn btn-main" data-jv="savekey">Guardar y hablar con Jarvis</button>'+(k?'<a class="lnk" data-jv="delkey" style="color:#f87171">Borrar clave</a>':'')+'<a class="lnk" data-close>Cerrar</a></div></div>';jvS.classList.add('on')}
+function jvNuevos(){const n=(S.clientOrders||[]).length,seen=+(jvGet('bl-jv-seen')||0);if(n<=seen){jvSet('bl-jv-seen',n);return}
+  jvSet('bl-jv-seen',n);if(!jvAvisos())return;const o=S.clientOrders[S.clientOrders.length-1];const p=o.pi!=null&&S.prod[o.pi]?S.prod[o.pi].n:'archivos digitales';
+  const msg=(n-seen>1?'Tienes '+(n-seen)+' pedidos nuevos. El último: ':'Nuevo pedido: ')+(o.cli||'un cliente')+', '+(o.q?o.q+' de '+p:p)+', por '+Math.round(o.tot)+' pesos.';toast('🎙️ '+msg);jvHablar(msg)}
+jvFab.addEventListener('click',jvAbrir);
+jvS.addEventListener('click',e=>{if(e.target===jvS||e.target.closest('[data-close]')){try{jvRec&&jvRec.stop()}catch(x){}jvParar();jvS.classList.remove('on');jvStatus('');return}
+  const b=e.target.closest('[data-jv]');if(!b)return;const a=b.dataset.jv;
+  if(a==='mic')jvEscuchar();
+  if(a==='send'){const i=$('#jv-in');if(i.value.trim()){jvPreguntar(i.value.trim());i.value=''}}
+  if(a==='aj')jvAjustes();
+  if(a==='probar'){const k=$('#jv-key').value.trim();if(k.length>=20)jvSet('bl-jv-key',k);jvHablar.av=0;jvHablar('Hola, soy Jarvis, tu asistente de BordaLink. Así sueno.')}
+  if(a==='savekey'){const v=$('#jv-key').value.trim();if(v.length<20){toast('Esa clave se ve incompleta');return}jvSet('bl-jv-key',v);toast('Clave guardada en este aparato');jvAbrir()}
+  if(a==='delkey'){try{localStorage.removeItem('bl-jv-key')}catch(x){}toast('Clave borrada');jvAjustes()}});
+jvS.addEventListener('change',e=>{if(e.target.id==='jv-modo'){jvSet('bl-jv-modo',e.target.value);$('#jv-gv').style.display=e.target.value==='real'?'':'none';$('#jv-dv').style.display=e.target.value==='dev'?'':'none'}if(e.target.id==='jv-gvoz')jvSet('bl-jv-gvoz',e.target.value);if(e.target.id==='jv-dvoz')jvSet('bl-jv-dvoz',e.target.value);if(e.target.id==='jv-conv')jvSet('bl-jv-conv',e.target.checked?'1':'0');if(e.target.id==='jv-av')jvSet('bl-jv-avisos',e.target.checked?'1':'0')});
+jvS.addEventListener('keydown',e=>{if(e.target.id==='jv-in'&&e.key==='Enter'){e.preventDefault();jvS.querySelector('[data-jv="send"]').click()}});
+try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch(e){}
+if(curScreen)jvShow(curScreen);
+
+
+/* ===== NUBE (Supabase): mismos datos en tablet, PC, celular y ESP32 ===== */
+const SB_URL='https://ubfcnkqqbkgdowztlgnn.supabase.co',SB_KEY='sb_publishable_5RmtLPQGZqXGi73kkRCk7A_OcgDKSc2';
+const sbChip=document.createElement('div');sbChip.className='sbchip';sbChip.innerHTML='<i></i><span>Nube</span>';document.body.appendChild(sbChip);
+function sbSes(){try{return JSON.parse(localStorage.getItem('bl-sb'))}catch(e){return null}}
+function sbSetSes(s){try{s?localStorage.setItem('bl-sb',JSON.stringify(s)):localStorage.removeItem('bl-sb')}catch(e){}}
+function sbEstado(txt,cls){sbChip.className='sbchip on '+(cls||'');sbChip.querySelector('span').textContent=txt}
+async function sbAuth(path,body){const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error_description||d.msg||d.message||('Error '+r.status));return d}
+function sbGuardar(d){const s={at:d.access_token,rt:d.refresh_token,exp:Date.now()+(d.expires_in||3600)*1000-60000,uid:d.user&&d.user.id,email:d.user&&d.user.email};sbSetSes(s);return s}
+async function sbToken(){let s=sbSes();if(!s)return null;if(Date.now()>s.exp){try{s=sbGuardar(await sbAuth('token?grant_type=refresh_token',{refresh_token:s.rt}))}catch(e){sbSetSes(null);sbEstado('Sesión de nube vencida: vuelve a entrar','err');return null}}return s}
+async function sbRest(path,opt){const s=await sbToken();if(!s)throw new Error('sin sesión');opt=opt||{};const h=Object.assign({apikey:SB_KEY,Authorization:'Bearer '+s.at,'Content-Type':'application/json'},opt.headers||{});
+  const r=await fetch(SB_URL+'/rest/v1/'+path,Object.assign({},opt,{headers:h}));if(!r.ok){const tx=await r.text();throw new Error(r.status+' '+tx.slice(0,140))}return r.status===204?null:r.json().catch(()=>null)}
+window.sbLogin=async(email,pw)=>{sbEstado('Conectando…');try{const d=await sbAuth('token?grant_type=password',{email,password:pw});sbGuardar(d);await sbPull(true);sbEstado('Nube conectada','ok');toast('☁️ Conectado a la nube: tus datos se ven en todos tus aparatos');renderPanelSafe()}
+  catch(e){const m=String(e.message||e);sbEstado('Solo en este aparato','err');toast(/Invalid login/i.test(m)?'☁️ Ese correo y contraseña no están en la nube. Créalos en Supabase → Authentication → Users.':/confirm/i.test(m)?'☁️ Falta confirmar tu correo en Supabase.':'☁️ Sin nube ('+m+'). Sigues trabajando en este aparato.')}};
+let sbBusy=false,sbTimer=null,sbSkip=false;
+async function sbPull(primera){const s=sbSes();if(!s)return;const rows=await sbRest('estados?select=data,updated_at&owner=eq.'+s.uid);
+  if(!rows||!rows.length){await sbSubir();return}
+  const rem=rows[0].data||{};const remTs=rem._ts||Date.parse(rows[0].updated_at)||0;
+  if(remTs>(S._ts||0)+500||(primera&&!S.tipo)){sbSkip=true;S=Object.assign(JSON.parse(JSON.stringify(defaults)),rem);try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}sbSkip=false;
+    if(!primera){toast('☁️ Datos actualizados desde otro aparato');try{go(curScreen)}catch(e){}}}
+  else if((S._ts||0)>remTs+500)await sbSubir()}
+async function sbSubir(){const s=sbSes();if(!s||sbBusy)return;sbBusy=true;try{await sbRest('estados?on_conflict=owner',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({owner:s.uid,data:S,updated_at:new Date().toISOString()})});sbEstado('Guardado en la nube','ok')}
+  catch(e){sbEstado('Sin conexión: se guarda al volver','err')}sbBusy=false}
+window.sbPush=()=>{if(sbSkip||!sbSes())return;clearTimeout(sbTimer);sbEstado('Guardando…');sbTimer=setTimeout(sbSubir,1500)};
+setInterval(()=>{if(sbSes()&&!document.hidden)sbPull(false).catch(()=>sbEstado('Sin conexión','err'))},15000);
+function renderPanelSafe(){if(curScreen==='s-panel'){try{renderPanel()}catch(e){}}}
+/* mandar un pedido a la cola de la máquina (la ESP32 lo recoge) */
+async function sbCola(o){if(!o)return;const maqs=(S.maq||[]).map((m,i)=>i+1);const maq=1;const punt=o.p&&o.p.punt?o.p.punt:(o.punt||15000);
+  try{await sbRest('cola',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({maquina:maq,folio:o.folio,cliente:o.cli||'',diseno:o.p?o.p.n:'Diseño',punt_pieza:Math.round(punt),piezas:o.q||1})});toast('⚙️ '+o.folio+' enviado a la Máquina '+maq+'. Aparecerá en su pantalla.')}
+  catch(e){toast('No se pudo mandar: '+e.message)}}
+/* tarjetas en vivo de las máquinas (datos que manda la ESP32) */
+async function sbLive(){const box=$('#sb-live');if(!box||curScreen!=='s-panel')return;if(!sbSes()){box.innerHTML='';return}
+  try{const rows=await sbRest('maquina_estado?select=maquina,data,updated_at&order=maquina');
+    box.innerHTML=(rows||[]).map(r=>{const d=r.data||{},seg=Math.round((Date.now()-Date.parse(r.updated_at))/1000),off=seg>120;
+      return '<div class="livec '+(off?'off':d.bordando?'run':'')+'"><span class="dot"></span><div><b>Máquina '+r.maquina+' · '+(off?'Sin señal':d.bordando?'BORDANDO':'DETENIDA')+'</b><small>'+(d.operador?'Operador: '+esc(d.operador)+' · ':'Sin operador · ')+(d.folio?esc(d.folio)+' · ':'')+'hace '+(seg<60?seg+' s':Math.round(seg/60)+' min')+'</small></div><div class="pt">'+(d.puntadas_pedido||0).toLocaleString('es-MX')+'<small>'+(d.ppm||0)+' ppm · '+(d.piezas||0)+'/'+(d.piezas_meta||0)+' pz</small></div></div>'+(d.alerta?'<div class="livec" style="border-color:#ef4444;color:#fca5a5">🚨 '+esc(d.alerta)+'</div>':'')}).join('')}catch(e){}}
+setInterval(sbLive,10000);
+const jvShow0=window.jvShow;window.jvShow=id=>{jvShow0&&jvShow0(id);const own=['s-panel','s-rep','s-cat','s-red','s-plan'].includes(id);if(own&&sbSes())sbChip.classList.add('on');else if(!own)sbChip.classList.remove('on');if(id==='s-panel')setTimeout(sbLive,300)};
+if(sbSes()){sbPull(true).then(()=>sbEstado('Nube conectada','ok')).catch(()=>sbEstado('Sin conexión','err'))}
+/* Jarvis también sabe lo que pasa en las máquinas */
+const jvCtx0=jvCtx;jvCtx=function(){let x=jvCtx0();const lv=$('#sb-live');if(lv&&lv.textContent.trim())x+='\nMÁQUINAS EN VIVO: '+lv.textContent.replace(/\s+/g,' ').trim();return x};
 
 renderMaq();renderEmp();
 })();
