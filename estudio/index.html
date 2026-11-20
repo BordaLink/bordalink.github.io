@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es-MX"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estudio de anuncios · BordaLink</title><meta name="theme-color" content="#0a0820">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{background:#0a0820;color:#ece9ff;font-family:Inter,system-ui,sans-serif;min-height:100vh}
+.w{max-width:560px;margin:0 auto;padding:16px}h1{font:900 22px Montserrat;letter-spacing:1px}p.s{color:#a99cf0;font-size:13px;margin:4px 0 14px}
+.up{display:block;border:2px dashed #7c3aed;border-radius:18px;padding:22px;text-align:center;font-weight:700;cursor:pointer;background:#ffffff08}
+.up input{display:none}#st{font-size:13px;color:#7dd3fc;margin:10px 0;min-height:18px}
+canvas{width:100%;border-radius:14px;background:#111;display:block}
+.tpl{display:flex;gap:8px;overflow-x:auto;padding:10px 0}.tpl button{flex:0 0 auto;border:1px solid #ffffff22;background:#ffffff10;color:#fff;border-radius:12px;padding:9px 13px;font-weight:700;font-size:13px}
+.tpl button.on{background:#7c3aed;border-color:#a78bfa}
+.f{margin:8px 0}.f label{font-size:12px;color:#c4bbf5;font-weight:700;display:block;margin-bottom:4px}
+.f input{width:100%;background:#ffffff10;border:1px solid #ffffff22;border-radius:12px;padding:10px;color:#fff;font:inherit}
+.row{display:flex;gap:8px}.row .f{flex:1}
+.b{width:100%;border:0;border-radius:14px;padding:14px;font-weight:800;font-size:15px;color:#fff;background:linear-gradient(135deg,#7c3aed,#2563eb);margin-top:10px}
+.g{background:#ffffff14;border:1px solid #ffffff22}
+input[type=color]{height:42px;padding:4px}
+</style></head><body><div class="w">
+<h1>📸 ESTUDIO DE ANUNCIOS</h1><p class="s">Sube la foto de tu prenda bordada o estampada. Quitamos el fondo y la ponemos en plantillas profesionales.</p>
+<label class="up">📷 Subir foto de la prenda<input type="file" accept="image/*" id="foto"></label>
+<div id="st">Tip: fondo liso y buena luz dan el mejor recorte.</div>
+<div class="tpl" id="tpl"></div>
+<canvas id="cv" width="1080" height="1350"></canvas>
+<div class="tpl" id="fmt"><button data-f="p" class="on">Publicación</button><button data-f="h">Historia</button></div>
+<div class="f"><label>Título</label><input id="t1" value="Bordado que se nota"></div>
+<div class="f"><label>Subtítulo</label><input id="t2" value="Gorras, uniformes y más · desde 1 pieza"></div>
+<div class="row"><div class="f"><label>Precio (opcional)</label><input id="pr" placeholder="$250"></div><div class="f"><label>Color</label><input id="col" type="color" value="#7c3aed"></div></div>
+<div class="row"><div class="f"><label>Negocio</label><input id="neg" value="BordaLink"></div><div class="f"><label>WhatsApp</label><input id="tel" inputmode="tel" placeholder="744 000 0000"></div></div>
+<label class="b g" style="display:block;text-align:center;cursor:pointer">🏷️ Poner mi logo<input type="file" accept="image/*" id="logo" hidden></label>
+<button class="b g" id="orig">↩️ Usar foto sin recortar</button>
+<button class="b" id="dl">⬇️ Descargar anuncio</button>
+</div>
+<script type="module">
+const $=s=>document.querySelector(s),cv=$('#cv'),x=cv.getContext('2d');
+let P=null,ORIG=null,LOGO=null,T=0,FMT='p';
+const LS={g:k=>{try{return localStorage.getItem(k)}catch(e){}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
+['neg','tel'].forEach(k=>{const v=LS.g('est-'+k);if(v)$('#'+k).value=v});
+const TPL=['Estudio','Oferta','Lanzamiento','Premium','Color','Neón'];
+$('#tpl').innerHTML=TPL.map((n,i)=>'<button data-t="'+i+'" class="'+(i?'':'on')+'">'+n+'</button>').join('');
+const st=t=>$('#st').textContent=t;
+const ld=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src});
+function fileURL(f){return new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(f)})}
+/* recorte de respaldo: quita fondo liso desde las orillas */
+function quitarLiso(im){const s=Math.min(1,1100/Math.max(im.width,im.height)),w=Math.round(im.width*s),h=Math.round(im.height*s);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.drawImage(im,0,0,w,h);const d=g.getImageData(0,0,w,h),a=d.data;
+  const smp=[];for(let i=0;i<w;i+=8){smp.push(i,0,i,h-1)}for(let j=0;j<h;j+=8){smp.push(0,j,w-1,j)}
+  let R=0,G=0,B=0,n=0;for(let k=0;k<smp.length;k+=2){const p=(smp[k+1]*w+smp[k])*4;R+=a[p];G+=a[p+1];B+=a[p+2];n++}R/=n;G/=n;B/=n;
+  const tol=46,seen=new Uint8Array(w*h),q=[];const push=(i,j)=>{const id=j*w+i;if(seen[id])return;seen[id]=1;const p=id*4,df=Math.abs(a[p]-R)+Math.abs(a[p+1]-G)+Math.abs(a[p+2]-B);if(df<tol*3){a[p+3]=0;q.push(i,j)}};
+  for(let i=0;i<w;i++){push(i,0);push(i,h-1)}for(let j=0;j<h;j++){push(0,j);push(w-1,j)}
+  while(q.length){const j=q.pop(),i=q.pop();if(i>0)push(i-1,j);if(i<w-1)push(i+1,j);if(j>0)push(i,j-1);if(j<h-1)push(i,j+1)}
+  for(let j=1;j<h-1;j++)for(let i=1;i<w-1;i++){const p=(j*w+i)*4;if(a[p+3]&&(!a[p-1]||!a[p+7]||!a[p-w*4+3]||!a[p+w*4+3]))a[p+3]=140}
+  g.putImageData(d,0,0);return recortar(c)}
+function recortar(c){const g=c.getContext('2d'),d=g.getImageData(0,0,c.width,c.height).data;let x0=c.width,y0=c.height,x1=0,y1=0;
+  for(let j=0;j<c.height;j+=2)for(let i=0;i<c.width;i+=2)if(d[(j*c.width+i)*4+3]>40){if(i<x0)x0=i;if(i>x1)x1=i;if(j<y0)y0=j;if(j>y1)y1=j}
+  if(x1<=x0)return c;const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(c,-x0,-y0);return o}
+$('#foto').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await fileURL(f);ORIG=await ld(url);P=ORIG;draw();
+  st('✨ Quitando el fondo con IA… (la primera vez tarda en descargar, unos segundos)');
+  try{const m=await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm');const blob=await m.removeBackground(f);
+    const im=await ld(URL.createObjectURL(blob));const c=document.createElement('canvas');c.width=im.width;c.height=im.height;c.getContext('2d').drawImage(im,0,0);P=recortar(c);st('✅ Fondo quitado. Elige una plantilla.')}
+  catch(err){P=quitarLiso(ORIG);st('✅ Fondo quitado (modo rápido). Para mejor recorte usa fondo liso.')}
+  draw()};
+$('#orig').onclick=()=>{if(ORIG){P=ORIG;draw();st('Usando la foto completa.')}};
+$('#logo').onchange=async e=>{const f=e.target.files[0];if(f){LOGO=await ld(await fileURL(f));draw()}};
+$('#tpl').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;T=+b.dataset.t;document.querySelectorAll('#tpl button').forEach(z=>z.classList.toggle('on',z===b));draw()};
+$('#fmt').onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;FMT=b.dataset.f;document.querySelectorAll('#fmt button').forEach(z=>z.classList.toggle('on',z===b));draw()};
+document.querySelectorAll('input:not([type=file])').forEach(i=>i.addEventListener('input',()=>{if(i.id==='neg'||i.id==='tel')LS.s('est-'+i.id,i.value);draw()}));
+const F=(w,s,f)=>x.font=w+' '+s+'px '+(f||'Montserrat, sans-serif');
+function wrap(t,X,Y,mw,lh,al){const ws=String(t).split(' ');let l='',L=[];ws.forEach(w=>{const z=l?l+' '+w:w;if(x.measureText(z).width>mw&&l){L.push(l);l=w}else l=z});if(l)L.push(l);x.textAlign=al||'left';L.forEach((s,i)=>x.fillText(s,X,Y+i*lh));return L.length*lh}
+function rr(X,Y,W,H,R){x.beginPath();x.moveTo(X+R,Y);x.arcTo(X+W,Y,X+W,Y+H,R);x.arcTo(X+W,Y+H,X,Y+H,R);x.arcTo(X,Y+H,X,Y,R);x.arcTo(X,Y,X+W,Y,R);x.closePath()}
+function prenda(X,Y,W,H,sombra,glow){if(!P){x.save();x.setLineDash([18,14]);x.strokeStyle='rgba(128,128,128,.6)';x.lineWidth=4;rr(X,Y,W,H,30);x.stroke();x.restore();x.fillStyle='rgba(128,128,128,.8)';F('700',34,'Inter');x.textAlign='center';x.fillText('Sube la foto de tu prenda',X+W/2,Y+H/2);return}
+  const s=Math.min(W/P.width,H/P.height),w=P.width*s,h=P.height*s,px=X+(W-w)/2,py=Y+(H-h)/2;
+  if(glow){const g=x.createRadialGradient(X+W/2,Y+H/2,10,X+W/2,Y+H/2,W*.6);g.addColorStop(0,glow);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(X-100,Y-100,W+200,H+200)}
+  if(sombra){x.save();x.fillStyle=sombra;x.filter='blur(18px)';x.beginPath();x.ellipse(X+W/2,py+h+10,w*.42,26,0,0,7);x.fill();x.restore()}
+  x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=40;x.shadowOffsetY=18;x.drawImage(P,px,py,w,h);x.restore()}
+function pie(col,bg){const H=cv.height;if(bg){x.fillStyle=bg;x.fillRect(0,H-120,1080,120)}x.fillStyle=col;F('800',40);x.textAlign='left';x.fillText($('#neg').value,60,H-48);
+  const t=$('#tel').value.trim();if(t){F('700',36,'Inter');x.textAlign='right';x.fillText('WhatsApp '+t,1020,H-48)}
+  if(LOGO){const s=110,r=Math.min(s/LOGO.width,s/LOGO.height);x.save();rr(1020-s-20,H-120-s-40,s+20,s+20,22);x.fillStyle='#fff';x.fill();x.restore();x.drawImage(LOGO,1020-s-10+(s-LOGO.width*r)/2,H-120-s-30+(s-LOGO.height*r)/2,LOGO.width*r,LOGO.height*r)}}
+function badge(X,Y,R,bg,fg){const p=$('#pr').value.trim();if(!p)return;x.fillStyle=bg;x.beginPath();x.arc(X,Y,R,0,7);x.fill();x.fillStyle=fg;F('900',R*.42);x.textAlign='center';x.fillText(p,X,Y+R*.15)}
+function draw(){const W=1080,H=FMT==='h'?1920:1350;cv.width=W;cv.height=H;const A=$('#col').value,t1=$('#t1').value,t2=$('#t2').value,tall=H>1400;x.textBaseline='alphabetic';
+  if(T===0){const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#f7f7f9');g.addColorStop(1,'#dcdde3');x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.fillStyle='#14121f';F('900',tall?104:88);const hh=wrap(t1,W/2,tall?230:160,W-140,tall?112:96,'center');x.fillStyle='#555a66';F('600',38,'Inter');wrap(t2,W/2,(tall?230:160)+hh+10,W-160,48,'center');
+    prenda(110,tall?560:400,W-220,tall?980:700,'rgba(0,0,0,.28)');badge(W-170,tall?600:440,105,A,'#fff');pie('#14121f')}
+  else if(T===1){x.fillStyle='#ffd400';x.fillRect(0,0,W,H);x.save();x.translate(W/2,H*.2);x.rotate(-.12);x.fillStyle='#e11d48';x.fillRect(-W,-110,W*2,220);x.restore();
+    x.fillStyle='#fff';let fs=tall?120:104;const tx=t1.toUpperCase();F('900',fs);while(x.measureText(tx).width>W*.86&&fs>40){fs-=4;F('900',fs)}x.textAlign='center';x.save();x.translate(W/2,H*.2+fs*.36);x.rotate(-.12);x.fillText(tx,0,0);x.restore();
+    prenda(90,H*.32,W-180,H*.48,'rgba(0,0,0,.35)');x.fillStyle='#111';F('800',44,'Inter');wrap(t2,W/2,H*.86,W-140,52,'center');badge(W-190,H*.35,130,'#e11d48','#fff');pie('#fff','#111')}
+  else if(T===2){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#1a0b3d');g.addColorStop(1,'#05060f');x.fillStyle=g;x.fillRect(0,0,W,H);
+    rr(60,70,230,74,37);x.fillStyle=A;x.fill();x.fillStyle='#fff';F('900',40);x.textAlign='center';x.fillText('NUEVO',175,122);
+    prenda(80,tall?380:230,W-160,tall?900:640,null,A+'aa');x.fillStyle='#fff';F('900',tall?100:84);const hh=wrap(t1.toUpperCase(),60,tall?1420:990,W-120,tall?106:90);x.fillStyle='#c4b5fd';F('600',38,'Inter');wrap(t2,60,(tall?1420:990)+hh,W-120,46);badge(W-170,180,105,'#fff','#111');pie('#fff')}
+  else if(T===3){x.fillStyle='#f3efe7';x.fillRect(0,0,W,H);x.strokeStyle='#1d1b16';x.lineWidth=3;x.strokeRect(40,40,W-80,H-80);
+    x.fillStyle='#1d1b16';F('600',30,'Inter');x.textAlign='center';x.fillText($('#neg').value.toUpperCase(),W/2,120);x.fillRect(W/2-40,145,80,3);
+    prenda(140,tall?260:200,W-280,tall?1080:720,'rgba(60,40,10,.25)');F('800',tall?86:70);wrap(t1,W/2,tall?1460:1030,W-200,tall?92:78,'center');x.fillStyle='#6b6458';F('500',34,'Inter');wrap(t2,W/2,tall?1600:1130,W-220,42,'center');
+    const t=$('#tel').value.trim();if(t){x.fillStyle='#1d1b16';F('700',32,'Inter');x.fillText('WhatsApp '+t,W/2,H-80)}badge(W-180,tall?320:260,95,'#1d1b16','#f3efe7')}
+  else if(T===4){x.fillStyle='#fff';x.fillRect(0,0,W,H);x.fillStyle=A;x.fillRect(0,0,W*.48,H);x.fillStyle='#fff';F('900',tall?96:80);const hh=wrap(t1,60,tall?320:220,W*.48-90,tall?102:86);F('600',36,'Inter');x.fillStyle='rgba(255,255,255,.9)';wrap(t2,60,(tall?320:220)+hh+20,W*.48-90,44);
+    prenda(W*.28,H*.2,W*.68,H*.6,'rgba(0,0,0,.3)');badge(W*.24,H*.72,110,'#111','#fff');pie('#111','#f1f1f4')}
+  else{x.fillStyle='#050510';x.fillRect(0,0,W,H);x.strokeStyle=A+'55';x.lineWidth=2;for(let i=0;i<W;i+=60){x.beginPath();x.moveTo(i,0);x.lineTo(i,H);x.stroke()}
+    x.save();x.strokeStyle=A;x.lineWidth=10;x.shadowColor=A;x.shadowBlur=40;rr(70,tall?300:200,W-140,tall?1000:720,40);x.stroke();x.restore();prenda(120,tall?340:240,W-240,tall?920:640,null,A+'66');
+    x.fillStyle='#fff';F('900',tall?96:78);x.save();x.shadowColor=A;x.shadowBlur=30;wrap(t1.toUpperCase(),W/2,tall?190:130,W-120,tall?100:84,'center');x.restore();x.fillStyle='#e9d5ff';F('600',38,'Inter');wrap(t2,W/2,tall?1430:1010,W-140,46,'center');badge(W-170,tall?340:240,100,A,'#fff');pie('#fff')}
+}
+$('#dl').onclick=()=>{cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='anuncio-'+TPL[T].toLowerCase()+'.png';document.body.appendChild(a);a.click();a.remove();st('⬇️ Descargado. Si no bajó, mantén presionada la imagen y elige "Guardar imagen".')},'image/png')};
+document.fonts&&document.fonts.ready.then(draw);draw();
+</script></body></html>
