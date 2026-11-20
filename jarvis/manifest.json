@@ -1,0 +1,16 @@
+{
+ "name": "Jarvis · BordaLink",
+ "short_name": "Jarvis",
+ "id": "/jarvis/",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#0a0820",
+ "theme_color": "#0a0820",
+ "icons": [
+  {"src": "jarvis-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+  {"src": "jarvis-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+  {"src": "jarvis-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+ ]
+}
