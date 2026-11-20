@@ -2757,11 +2757,12 @@ document.addEventListener('click',e=>{const a=e.target.closest('[data-legal]');i
 
 
 /* ===== JARVIS: asistente de voz del taller (Gemini) ===== */
+const AIN=()=>{try{return localStorage.getItem('jv-ai')||'Asistente'}catch(e){return 'Asistente'}};
 const JV_MODEL='gemini-flash-latest';
 const jvGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},jvSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 let jvHist=[],jvRec=null,jvBusy=false,jvListening=false;
 const jvConv=()=>jvGet('bl-jv-conv')!=='0',jvAvisos=()=>jvGet('bl-jv-avisos')!=='0';
-const jvFab=document.createElement('button');jvFab.className='jvfab';jvFab.innerHTML='<i>🎙️</i>Jarvis';document.body.appendChild(jvFab);
+const jvFab=document.createElement('button');jvFab.className='jvfab';jvFab.innerHTML='<i>🎙️</i>'+AIN()+'';document.body.appendChild(jvFab);
 const jvS=document.createElement('div');jvS.className='sheet jvs';document.body.appendChild(jvS);
 const JV_SCREENS=['s-panel','s-rep','s-cat','s-red','s-plan'];
 window.jvShow=id=>{jvFab.classList.toggle('on',JV_SCREENS.includes(id));if(id==='s-panel')setTimeout(jvNuevos,600)};
@@ -2773,7 +2774,7 @@ function jvCtx(){const L=[];const t=totals(),orders=demoOrders();
   L.push('Catálogo: '+S.prod.filter(p=>p.activo!==false).slice(0,12).map(p=>p.n+' '+$f(num(p.precio))+(p.u&&p.u!=='pieza'?'/'+p.u:'')).join('; ')+'.');
   L.push('Números del mes (proyectados con el catálogo): ventas '+$f(t.V)+', ganancia '+$f(t.U)+'. Tienda '+(S.shop===false?'en pausa':'abierta')+'.');
   if((S.opDelays||[]).length)L.push('Retrasos registrados por operadores: '+S.opDelays.length+'.');
-  return 'Eres Jarvis, el asistente de voz del taller de bordado BordaLink de '+((S.cuenta.nombre||'').split(' ')[0]||'el dueño')+'. Hablas en español de México, cálido y directo, como un asistente personal. Tus respuestas se leen en voz alta: usa frases cortas (1 a 3), sin listas, sin símbolos, sin emojis ni markdown; di las cantidades como se dicen en voz alta. Usa solo los datos de abajo; si algo no está, dilo y propón cómo saberlo. Puedes dar consejos del oficio (bordado, DTF, precios, tiempos a 650 puntadas por minuto). Mantén la plática fluida y, cuando ayude, haz una pregunta de seguimiento.\nDATOS DEL TALLER AHORA:\n'+L.join('\n')}
+  return 'Eres '+AIN()+', el asistente de voz del taller de bordado BordaLink de '+((S.cuenta.nombre||'').split(' ')[0]||'el dueño')+'. Hablas en español de México, cálido y directo, como un asistente personal. Tus respuestas se leen en voz alta: usa frases cortas (1 a 3), sin listas, sin símbolos, sin emojis ni markdown; di las cantidades como se dicen en voz alta. Usa solo los datos de abajo; si algo no está, dilo y propón cómo saberlo. Puedes dar consejos del oficio (bordado, DTF, precios, tiempos a 650 puntadas por minuto). Mantén la plática fluida y, cuando ayude, haz una pregunta de seguimiento.\nDATOS DEL TALLER AHORA:\n'+L.join('\n')}
 function jvLog(who,txt){const lg=jvS.querySelector('.jvlog');if(!lg)return;const d=document.createElement('div');d.className='jvm '+who;d.textContent=txt;lg.appendChild(d);lg.scrollTop=lg.scrollHeight}
 function jvStatus(s,cls){const st=jvS.querySelector('.jvst'),o=jvS.querySelector('.jvorb');if(st)st.textContent=s;if(o){o.classList.toggle('live',cls==='live');o.classList.toggle('think',cls==='think')}jvFab.classList.toggle('live',!!cls)}
 function jvVoz(){const vs=speechSynthesis.getVoices(),el=jvGet('bl-jv-dvoz');const sel=el&&vs.find(v=>v.voiceURI===el);if(sel)return sel;return vs.find(v=>/es-MX/i.test(v.lang)&&/natural|neural|online|google/i.test(v.name))||vs.find(v=>/es-MX/i.test(v.lang))||vs.find(v=>/es-US/i.test(v.lang))||vs.find(v=>/^es/i.test(v.lang))}
@@ -2817,21 +2818,21 @@ function jvEscuchar(){const SR=window.SpeechRecognition||window.webkitSpeechReco
   jvRec.onerror=e=>{jvListening=false;jvStatus(e.error==='not-allowed'||e.error==='service-not-allowed'?'Permite el micrófono. Si estás dentro de Claude, ábrelo en bordalink.github.io.':e.error==='no-speech'?'No te escuché. Toca el círculo para hablar.':'Error de micrófono: '+e.error)};
   jvRec.onend=()=>{jvListening=false;if(final.trim())jvPreguntar(final.trim());else if(jvS.querySelector('.jvst').textContent.startsWith('Te escucho'))jvStatus('Toca el círculo para hablar.')};
   try{jvRec.start()}catch(e){jvStatus('No pude abrir el micrófono.')}}
-function jvAbrir(){jvS.innerHTML='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h1" style="font-size:20px">🎙️ Jarvis</div><button class="lnk" data-jv="aj" style="background:none;border:0;color:#b9a7ff;font-size:13px">⚙️ Ajustes</button></div><div class="sub" style="margin:2px 0 0">Tu asistente del taller. Pregúntale por pedidos, piezas, máquinas o precios.</div>'
+function jvAbrir(){jvS.innerHTML='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h1" style="font-size:20px">🎙️ '+AIN()+'</div><button class="lnk" data-jv="aj" style="background:none;border:0;color:#b9a7ff;font-size:13px">⚙️ Ajustes</button></div><div class="sub" style="margin:2px 0 0">Tu asistente del taller. Pregúntale por pedidos, piezas, máquinas o precios.</div>'
   +'<div class="jvlog"></div><button class="jvorb" data-jv="mic">🎙️</button><div class="jvst">Toca el círculo y habla</div>'
   +'<div class="jvrow"><input id="jv-in" placeholder="O escríbele aquí…"><button data-jv="send">Enviar</button></div>'
   +'<div class="jvopt"><label><input type="checkbox" id="jv-conv" '+(jvConv()?'checked':'')+'> Conversación continua</label><label><input type="checkbox" id="jv-av" '+(jvAvisos()?'checked':'')+'> Avisarme pedidos nuevos por voz</label></div>'
   +'<div class="btns"><a class="lnk" data-close>Cerrar</a></div></div>';
   jvHist.forEach(m=>jvLog(m.role==='user'?'u':'j',m.parts[0].text));jvS.classList.add('on');
-  if(!jvGet('bl-jv-key'))jvAjustes();else if(!jvHist.length){const n=(S.cuenta.nombre||'').split(' ')[0];const s='Hola'+(n?' '+n:'')+', soy Jarvis. ¿En qué te ayudo?';jvLog('j',s);jvHablar(s,()=>{if(jvConv())jvEscuchar()})}}
-function jvAjustes(){const k=jvGet('bl-jv-key')||'';jvS.innerHTML='<div class="card"><div class="h1" style="font-size:20px">⚙️ Ajustes de Jarvis</div><div class="sub">Jarvis piensa con Gemini de Google. Pega aquí tu clave de Google AI Studio.</div>'
+  if(!jvGet('bl-jv-key'))jvAjustes();else if(!jvHist.length){const n=(S.cuenta.nombre||'').split(' ')[0];const s='Hola'+(n?' '+n:'')+', soy '+AIN()+'. ¿En qué te ayudo?';jvLog('j',s);jvHablar(s,()=>{if(jvConv())jvEscuchar()})}}
+function jvAjustes(){const k=jvGet('bl-jv-key')||'';jvS.innerHTML='<div class="card"><div class="h1" style="font-size:20px">⚙️ Ajustes de '+AIN()+'</div><div class="sub">'+AIN()+' piensa con Gemini de Google. Pega aquí tu clave de Google AI Studio.</div>'
   +'<div class="field"><label>Clave de Gemini</label><div class="inp"><input id="jv-key" type="password" value="'+esc(k)+'" placeholder="Pega tu clave"></div></div>'
-  +'<div class="field"><label>Voz de Jarvis</label><select class="jvsel" id="jv-modo"><option value="real" '+(jvModo()==='real'?'selected':'')+'>Realista (voz de Gemini, suena humana)</option><option value="dev" '+(jvModo()==='dev'?'selected':'')+'>Del aparato (gratis, sin límite)</option></select></div>'
+  +'<div class="field"><label>Voz de '+AIN()+'</label><select class="jvsel" id="jv-modo"><option value="real" '+(jvModo()==='real'?'selected':'')+'>Realista (voz de Gemini, suena humana)</option><option value="dev" '+(jvModo()==='dev'?'selected':'')+'>Del aparato (gratis, sin límite)</option></select></div>'
   +'<div class="field" id="jv-gv" style="'+(jvModo()==='real'?'':'display:none')+'"><label>Voz realista</label><select class="jvsel" id="jv-gvoz">'+JV_GVOCES.map(v=>'<option value="'+v[0]+'" '+((jvGet('bl-jv-gvoz')||'Charon')===v[0]?'selected':'')+'>'+v[1]+'</option>').join('')+'</select></div>'
   +'<div class="field" id="jv-dv" style="'+(jvModo()==='dev'?'':'display:none')+'"><label>Voz del aparato</label><select class="jvsel" id="jv-dvoz"><option value="">Automática (español de México)</option>'+speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)).map(v=>'<option value="'+esc(v.voiceURI)+'" '+(jvGet('bl-jv-dvoz')===v.voiceURI?'selected':'')+'>'+esc(v.name)+' ('+v.lang+')</option>').join('')+'</select></div>'
   +'<button class="btn btn-ghost" data-jv="probar" style="margin-bottom:10px">🔊 Probar voz</button>'
-  +'<div class="mini-l">🔒 La clave se guarda solo en este aparato. No queda en el código de la app ni en GitHub. Si alguien más usará Jarvis en otra tablet, pégala ahí también.</div>'
-  +'<div class="btns"><button class="btn btn-main" data-jv="savekey">Guardar y hablar con Jarvis</button>'+(k?'<a class="lnk" data-jv="delkey" style="color:#f87171">Borrar clave</a>':'')+'<a class="lnk" data-close>Cerrar</a></div></div>';jvS.classList.add('on')}
+  +'<div class="mini-l">🔒 La clave se guarda solo en este aparato. No queda en el código de la app ni en GitHub. Si alguien más usará '+AIN()+' en otra tablet, pégala ahí también.</div>'
+  +'<div class="btns"><button class="btn btn-main" data-jv="savekey">Guardar y hablar con '+AIN()+'</button>'+(k?'<a class="lnk" data-jv="delkey" style="color:#f87171">Borrar clave</a>':'')+'<a class="lnk" data-close>Cerrar</a></div></div>';jvS.classList.add('on')}
 function jvNuevos(){const n=(S.clientOrders||[]).length,seen=+(jvGet('bl-jv-seen')||0);if(n<=seen){jvSet('bl-jv-seen',n);return}
   jvSet('bl-jv-seen',n);if(!jvAvisos())return;const o=S.clientOrders[S.clientOrders.length-1];const p=o.pi!=null&&S.prod[o.pi]?S.prod[o.pi].n:'archivos digitales';
   const msg=(n-seen>1?'Tienes '+(n-seen)+' pedidos nuevos. El último: ':'Nuevo pedido: ')+(o.cli||'un cliente')+', '+(o.q?o.q+' de '+p:p)+', por '+Math.round(o.tot)+' pesos.';toast('🎙️ '+msg);jvHablar(msg)}
@@ -2841,7 +2842,7 @@ jvS.addEventListener('click',e=>{if(e.target===jvS||e.target.closest('[data-clos
   if(a==='mic')jvEscuchar();
   if(a==='send'){const i=$('#jv-in');if(i.value.trim()){jvPreguntar(i.value.trim());i.value=''}}
   if(a==='aj')jvAjustes();
-  if(a==='probar'){const k=$('#jv-key').value.trim();if(k.length>=20)jvSet('bl-jv-key',k);jvHablar.av=0;jvHablar('Hola, soy Jarvis, tu asistente de BordaLink. Así sueno.')}
+  if(a==='probar'){const k=$('#jv-key').value.trim();if(k.length>=20)jvSet('bl-jv-key',k);jvHablar.av=0;jvHablar('Hola, soy '+AIN()+', tu asistente de BordaLink. Así sueno.')}
   if(a==='savekey'){const v=$('#jv-key').value.trim();if(v.length<20){toast('Esa clave se ve incompleta');return}jvSet('bl-jv-key',v);toast('Clave guardada en este aparato');jvAbrir()}
   if(a==='delkey'){try{localStorage.removeItem('bl-jv-key')}catch(x){}toast('Clave borrada');jvAjustes()}});
 jvS.addEventListener('change',e=>{if(e.target.id==='jv-modo'){jvSet('bl-jv-modo',e.target.value);$('#jv-gv').style.display=e.target.value==='real'?'':'none';$('#jv-dv').style.display=e.target.value==='dev'?'':'none'}if(e.target.id==='jv-gvoz')jvSet('bl-jv-gvoz',e.target.value);if(e.target.id==='jv-dvoz')jvSet('bl-jv-dvoz',e.target.value);if(e.target.id==='jv-conv')jvSet('bl-jv-conv',e.target.checked?'1':'0');if(e.target.id==='jv-av')jvSet('bl-jv-avisos',e.target.checked?'1':'0')});
