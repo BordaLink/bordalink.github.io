@@ -2225,17 +2225,50 @@ function buildEmb(im){
   g.save();g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=10;g.shadowOffsetY=4;g.globalAlpha=.9;g.drawImage(mk,0,0,w*Z,h*Z);g.restore();
   const R=rnd(7),order=C.map((c,i)=>i).sort((a,b)=>cnt[b]-cnt[a]);
   g.lineCap='round';
-  order.forEach((l,oi)=>{if(!cnt[l])return;const col=C[l],a=ANG[oi%ANG.length]*Math.PI/180,dx=Math.cos(a),dy=Math.sin(a),px=-dy,py=dx;const b=bb[l],cx=(b[0]+b[2])/2,cy=(b[1]+b[3])/2,rad=Math.hypot(b[2]-b[0],b[3]-b[1])/2+4;
-    const small=cnt[l]<w*h*.004;const step=small?1.5:1.9,len=small?2.6:3.8;
-    for(let u=-rad;u<=rad;u+=step){const off=((u/step)|0)%3*2.4;for(let v=-rad+off;v<=rad;v+=len*1.85){const x=cx+px*u+dx*v,y=cy+py*u+dy*v;if(L(x,y)!==l)continue;
-      let a1=len,a2=len;while(a1>.6&&L(x-dx*a1,y-dy*a1)!==l)a1-=.6;while(a2>.6&&L(x+dx*a2,y+dy*a2)!==l)a2-=.6;
-      const f=.8+R()*.32,r=Math.min(255,col[0]*f),gg=Math.min(255,col[1]*f),bl=Math.min(255,col[2]*f);
-      const x1=(x-dx*a1)*Z,y1=(y-dy*a1)*Z,x2=(x+dx*a2)*Z,y2=(y+dy*a2)*Z;
-      g.strokeStyle='rgb('+(r*.55|0)+','+(gg*.55|0)+','+(bl*.55|0)+')';g.lineWidth=step*Z*1.05;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
-      g.strokeStyle='rgb('+(r|0)+','+(gg|0)+','+(bl|0)+')';g.lineWidth=step*Z*.72;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
-      g.strokeStyle='rgba(255,255,255,'+(.18+R()*.22)+')';g.lineWidth=Z*.45;g.beginPath();g.moveTo(x1+px*Z*.4,y1+py*Z*.4);g.lineTo(x2+px*Z*.4,y2+py*Z*.4);g.stroke();}}});
-  // contorno satinado
-  g.lineWidth=Z*.9;for(let y=1;y<h-1;y+=1)for(let x=1;x<w-1;x+=1){const i=y*w+x,l=lab[i];if(l<0)continue;if(lab[i-1]!==l||lab[i+1]!==l||lab[i-w]!==l||lab[i+w]!==l){if(R()<.55){const c=C[l];g.fillStyle='rgba('+(c[0]*.45|0)+','+(c[1]*.45|0)+','+(c[2]*.45|0)+',.85)';g.fillRect(x*Z,y*Z,Z*.9,Z*.9)}}}
+  // --- distancia a la orilla (para saber qué es delgado = plumetis y qué es grueso = tatami) ---
+  const N=w*h,INF=1e6,D=new Float32Array(N);
+  const dt=(A,seed)=>{for(let i=0;i<N;i++)A[i]=lab[i]<0?0:(seed(i)?1:INF);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,l=lab[i];if(l<0)continue;let v=A[i];
+      if(x>0&&lab[i-1]===l)v=Math.min(v,A[i-1]+1);if(y>0){if(lab[i-w]===l)v=Math.min(v,A[i-w]+1);if(x>0&&lab[i-w-1]===l)v=Math.min(v,A[i-w-1]+1.414);if(x<w-1&&lab[i-w+1]===l)v=Math.min(v,A[i-w+1]+1.414)}A[i]=v}
+    for(let y=h-1;y>=0;y--)for(let x=w-1;x>=0;x--){const i=y*w+x,l=lab[i];if(l<0)continue;let v=A[i];
+      if(x<w-1&&lab[i+1]===l)v=Math.min(v,A[i+1]+1);if(y<h-1){if(lab[i+w]===l)v=Math.min(v,A[i+w]+1);if(x<w-1&&lab[i+w+1]===l)v=Math.min(v,A[i+w+1]+1.414);if(x>0&&lab[i+w-1]===l)v=Math.min(v,A[i+w-1]+1.414)}A[i]=v}};
+  const edge=i=>{const x=i%w,y=(i/w)|0,l=lab[i];return x===0||y===0||x===w-1||y===h-1||lab[i-1]!==l||lab[i+1]!==l||lab[i-w]!==l||lab[i+w]!==l};
+  dt(D,edge);
+  // 4 mm de ancho en un diseño de ~10 cm → media anchura en px
+  const r=Math.max(3,Math.round(w/33));
+  // cada pieza completa (mismo color, conectada) es TATAMI si en algún punto mide más de ~6 mm; si no, toda es PLUMETIS
+  const comp=new Int32Array(N).fill(-1),thick=new Uint8Array(N),stk=[];let nc=0;
+  for(let s0=0;s0<N;s0++){if(lab[s0]<0||comp[s0]>=0)continue;const l=lab[s0],mem=[];let mxD=0;comp[s0]=nc;stk.push(s0);
+    while(stk.length){const i=stk.pop();mem.push(i);if(D[i]>mxD)mxD=D[i];const x=i%w;for(const j of [x>0?i-1:-1,x<w-1?i+1:-1,i-w,i+w])if(j>=0&&j<N&&comp[j]<0&&lab[j]===l){comp[j]=nc;stk.push(j)}}
+    if(mxD>=r)for(const i of mem)thick[i]=1;nc++}
+  // sin núcleo grueso en su color → D2 queda INF → delgado
+  const thr=(col,f,x1,y1,x2,y2,wd)=>{const r0=Math.min(255,col[0]*f),g0=Math.min(255,col[1]*f),b0=Math.min(255,col[2]*f);
+    g.strokeStyle='rgb('+(r0*.66|0)+','+(g0*.66|0)+','+(b0*.66|0)+')';g.lineWidth=wd*1.1;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+    g.strokeStyle='rgb('+(r0|0)+','+(g0|0)+','+(b0|0)+')';g.lineWidth=wd*.75;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+    g.strokeStyle='rgba(255,255,255,'+(.15+R()*.2)+')';g.lineWidth=Z*.4;g.beginPath();g.moveTo(x1,y1-wd*.18);g.lineTo(x2,y2-wd*.18);g.stroke()};
+  // 1) TATAMI horizontal en las partes gruesas (regla de Argil: relleno siempre horizontal)
+  order.forEach(l=>{if(!cnt[l])return;const col=C[l],len=3.6,step=1.8;
+    for(let y=0.5,row=0;y<h;y+=step,row++){const off=((row*0.382)%1)*len*1.85;for(let x=-len*2+off;x<w;x+=len*1.85){const xi=Math.round(x),yi=Math.round(y);if(xi<0||xi>=w||yi>=h)continue;const i=yi*w+xi;if(lab[i]!==l||!thick[i])continue;
+      let a1=len,a2=len;const ok=(xx)=>{const q=Math.round(xx);if(q<0||q>=w)return false;const j=yi*w+q;return lab[j]===l&&thick[j]};while(a1>.5&&!ok(x-a1))a1-=.5;while(a2>.5&&!ok(x+a2))a2-=.5;
+      {const jy=(R()-.5)*.5;thr(col,.86+R()*.22,(x-a1)*Z,(y+jy)*Z,(x+a2)*Z,(y-jy)*Z,step*Z)}}}});
+  // 2) PLUMETIS en lo delgado (contornos, letras chicas): puntada larga que cruza el trazo de orilla a orilla
+  const gx=new Float32Array(N),gy=new Float32Array(N);
+  for(let y=2;y<h-2;y++)for(let x=2;x<w-2;x++){const i=y*w+x,l=lab[i];if(l<0||thick[i])continue;const V=j=>lab[j]===l?D[j]:0;
+    gx[i]=(V(i+1)-V(i-1))*2+V(i+2)-V(i-2)+V(i-w+1)-V(i-w-1)+V(i+w+1)-V(i+w-1);gy[i]=(V(i+w)-V(i-w))*2+V(i+2*w)-V(i-2*w)+V(i+w+1)-V(i-w+1)+V(i+w-1)-V(i-w-1)}
+  order.forEach(l=>{if(!cnt[l])return;const col=C[l];
+    for(let y=2;y<h-2;y++)for(let x=2;x<w-2;x++){const i=y*w+x;if(lab[i]!==l||thick[i]||D[i]>1.5)continue;
+      // dirección: hacia adentro del trazo (promedio del vecindario)
+      let sx=0,sy=0;for(let k=-1;k<=1;k++)for(let m=-1;m<=1;m++){const j=i+k*w+m;if(lab[j]===l&&!thick[j]){sx+=gx[j];sy+=gy[j]}}
+      const n=Math.hypot(sx,sy);if(n<1e-3)continue;sx/=n;sy/=n;
+      let s=0;const mx=r*2.6;while(s<mx){const xx=Math.round(x+sx*(s+.5)),yy=Math.round(y+sy*(s+.5));if(xx<0||yy<0||xx>=w||yy>=h)break;const j=yy*w+xx;if(lab[j]!==l||thick[j])break;s+=.5}
+      if(s<.8)continue;thr(col,.9+R()*.25,x*Z,y*Z,(x+sx*s)*Z,(y+sy*s)*Z,Z*1.05)}});
+  // RELIEVE: cada pieza se ve abultada como hilo real (alto según distancia a la orilla, luz arriba-izquierda)
+  {const Hm=new Float32Array(N);for(let i=0;i<N;i++){if(lab[i]<0)continue;const cap=thick[i]?r*.9:Math.max(1.5,r*.45),q=Math.min(D[i],cap)/cap;Hm[i]=1-(1-q)*(1-q)}
+   const W2=w*Z,H2=h*Z,img=g.getImageData(0,0,W2,H2),p=img.data,hv=(x,y)=>{x=Math.max(0,Math.min(w-1,x));y=Math.max(0,Math.min(h-1,y));return Hm[(y|0)*w+(x|0)]};
+   for(let Y=0;Y<H2;Y++)for(let X=0;X<W2;X++){const x=X/Z,y=Y/Z,i=(y|0)*w+(x|0);if(lab[i]<0)continue;
+     const s=(hv(x-1.5,y-1.5)-hv(x+1.5,y+1.5))*1.25,ao=.42+.58*Hm[i],k=Math.max(.35,Math.min(1.6,ao*(1+s)));const o=(Y*W2+X)*4;
+     p[o]=Math.min(255,p[o]*k+(s>0?s*40:0));p[o+1]=Math.min(255,p[o+1]*k+(s>0?s*40:0));p[o+2]=Math.min(255,p[o+2]*k+(s>0?s*40:0))}
+   g.putImageData(img,0,0)}
   // luz
   g.globalCompositeOperation='source-atop';const gr=g.createLinearGradient(0,0,w*Z,h*Z);gr.addColorStop(0,'rgba(255,255,255,.14)');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(0,0,0,.22)');g.fillStyle=gr;g.fillRect(0,0,w*Z,h*Z);g.globalCompositeOperation='source-over';
   EMB={src:S.cli.img,url:cv.toDataURL('image/png'),cv,lab,pal:C,w,h};
