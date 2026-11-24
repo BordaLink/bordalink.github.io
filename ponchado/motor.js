@@ -374,7 +374,7 @@ function analizar(img, anchoMM, opts) {
 }
 
 // ---------------- ponchado: capas -> puntadas ----------------
-const TIRE = { bajo: 0.75, medio: 1.5, alto: 2.25 };          // px por lado (0.15 / 0.30 / 0.45 mm total)
+const TIRE = { bajo: 0.85, medio: 1.25, alto: 2.0 };          // px por lado = tire de Argil 0.17 / 0.25 / 0.40 mm total
 const RELLENO = { alto: 3.5, medio: 4.5, bajo: 6.0 };          // separación de filas (0.35 / 0.45 / 0.60 mm)
 const ENCIME = 3, TAT_LEN = 40, RUN_LEN = 20;
 
