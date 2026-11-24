@@ -819,6 +819,7 @@ button{cursor:pointer;border:0;background:none}
 #c-stage.photo[data-tee="1"]{background:radial-gradient(circle at 50% 40%,#eef0f5,#b9bfcc)}#c-stage[data-tee="1"] .pmcv{background:transparent}
 #c-stage{overflow:hidden}#c-stage.zoomed{touch-action:none;cursor:move}.zctl{position:absolute;left:10px;top:10px;z-index:6;display:none;flex-direction:column;gap:6px}#c-stage.photo .zctl{display:flex}.zctl button{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(10,12,30,.72);color:#fff;font-size:18px;font-weight:700;backdrop-filter:blur(6px)}
 .rolepick .rbtn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px;margin-top:10px;border-radius:16px;border:1px solid var(--line2);background:rgba(255,255,255,.04);color:inherit;cursor:pointer;transition:.15s}.rolepick .rbtn:hover{border-color:#a855f7;background:rgba(168,85,247,.12)}.rolepick .ri{font-size:26px;width:46px;height:46px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,rgba(124,58,237,.35),rgba(34,211,238,.25))}.rolepick b{display:block;font-size:17px;letter-spacing:.06em}.rolepick small{display:block;opacity:.7;font-size:12.5px;margin-top:2px}.rolepick .ra{margin-left:auto;font-size:26px;opacity:.6}
+.aicmp{position:relative;border-radius:14px;overflow:hidden;background:repeating-conic-gradient(#1a1e3d 0 25%,#11142b 0 50%) 0 0/18px 18px;aspect-ratio:1}.aicmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.aicmp .aib{position:absolute;inset:0;overflow:hidden;clip-path:inset(0 0 0 50%)}.aicmp .ail{position:absolute;top:8px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:rgba(0,0,0,.6);color:#fff}.aicmp .ail.l{left:8px}.aicmp .ail.r{right:8px;background:rgba(124,58,237,.85)}
 </style>
 </head>
 <body>
@@ -1222,6 +1223,20 @@ button{cursor:pointer;border:0;background:none}
   <div class="block" id="c-tools" style="display:none"><div class="bt">Mejora tu imagen <span style="color:#4ade80">(gratis)</span></div>
     <div class="tgl" style="margin:0"><div><b>Quitar fondo</b><span>Borra el fondo liso automáticamente</span></div><button class="sw" id="c-bg"></button></div>
     <div class="tgl"><div><b>Mejora ligera</b><span>Más color, contraste y nitidez</span></div><button class="sw" id="c-enh"></button></div>
+  </div>
+  <div class="block" id="c-ai" style="display:none"><div class="bt">✨ Mejorar con IA <span style="color:#c4b5fd">(alta resolución)</span></div>
+    <div class="guide" style="margin:0 0 10px">Para fotos borrosas, pixeladas o viejas. La IA la deja nítida y en alta resolución; tú apruebas el resultado.</div>
+    <div class="mini-l" style="margin-bottom:6px">¿Qué es tu imagen?</div>
+    <div class="seg" id="c-ai-t" style="grid-template-columns:repeat(3,1fr)"><button data-ait="logo">Logo / diseño</button><button data-ait="producto">Foto de prenda</button><button data-ait="persona">Persona / foto vieja</button></div>
+    <button class="btn btn-main" id="c-ai-go" style="margin-top:10px">✨ Mejorar con IA</button>
+    <div id="c-ai-st" class="note" style="display:none;margin-top:8px"></div>
+    <div id="c-ai-res" style="display:none;margin-top:10px">
+      <div class="aicmp" id="c-ai-cmp"><img id="c-ai-a" alt="Original"><div class="aib" id="c-ai-bw"><img id="c-ai-b" alt="Mejorada"></div><span class="ail l">Original</span><span class="ail r">Mejorada con IA</span></div>
+      <input type="range" id="c-ai-r" min="0" max="100" value="50" style="width:100%;margin-top:6px" aria-label="Comparar antes y después">
+      <div class="note" style="margin-top:6px">⚠️ Revisa que tu diseño no haya cambiado (letras, formas, colores). La IA a veces altera detalles.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><button class="btn btn-main" id="c-ai-ok">Usar la mejorada</button><button class="btn btn-ghost" id="c-ai-no">Quedarme con la original</button></div>
+      <button class="btn btn-ghost" id="c-ai-dl" style="margin-top:8px">⬇ Descargar versión mejorada</button>
+    </div>
   </div>
   <div class="block" id="c-anal" style="display:none"><div class="bt">Análisis de tu archivo</div><div class="anal" id="c-anal-g"></div><div class="guide" id="c-anal-tip" style="margin-top:12px"></div></div>
   <label class="chk"><input type="checkbox" id="c1-ok"><span>Declaro que este diseño es mío o que tengo autorización de su titular para reproducirlo. <a class="lnk" data-legal="t">Ver términos</a></span></label>
@@ -2063,7 +2078,8 @@ const cliProds=()=>{ensureProds();S.prod.forEach(normProd);return S.prod.map((p,
 function cbiz(){$$('.cbiz').forEach(e=>e.textContent=S.datos.nombre||'Taller BordaLink')}
 
 /* --- paso 1: subir y preparar --- */
-function loadImg(src){const img=new Image();img.onload=()=>{S.cli.ow=img.width;S.cli.oh=img.height;const s=Math.min(1,700/Math.max(img.width,img.height)),cv=document.createElement('canvas');cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);const x=cv.getContext('2d');x.drawImage(img,0,0,cv.width,cv.height);origData=x.getImageData(0,0,cv.width,cv.height);S.cli.bg=detectBg(origData);S.cli.enh=true;processImg();toast('Diseño cargado')};img.src=src}
+let origSrc=null,aiFull=null;
+function loadImg(src,keepAi){origSrc=src;if(!keepAi){aiFull=null;S.cli.ai=null}const img=new Image();img.onload=()=>{S.cli.ow=img.width;S.cli.oh=img.height;const s=Math.min(1,700/Math.max(img.width,img.height)),cv=document.createElement('canvas');cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);const x=cv.getContext('2d');x.drawImage(img,0,0,cv.width,cv.height);origData=x.getImageData(0,0,cv.width,cv.height);S.cli.bg=detectBg(origData)&&(!keepAi||S.cli.aiT==='logo');S.cli.enh=!keepAi;processImg();if(!keepAi)toast('Diseño cargado')};img.src=src}
 function readFile(f){if(f&&/\.dst$/i.test(f.name)){const r=new FileReader();r.onload=()=>{const d=dstRender(r.result,f.name);if(!d){toast('Ese DST no se pudo leer');return}S.cli.dst=d.info;dstInfo();loadImg(d.url);toast('DST leído: '+d.info.punt.toLocaleString('es-MX')+' puntadas exactas')};r.readAsArrayBuffer(f);return}
   if(!f||!/^image\//.test(f.type)){toast('Sube una imagen PNG, JPG o un archivo DST');return}S.cli.dst=null;dstInfo();const r=new FileReader();r.onload=()=>loadImg(r.result);r.readAsDataURL(f)}
 /* lector de DST (Tajima): puntadas exactas, colores, medidas y vista previa */
@@ -2120,7 +2136,7 @@ function paintC1(){
   const has=!!S.cli.img;$('#c-dz').classList.toggle('has',has);$('#c1-next').disabled=!has;
   if(has&&!origData){const im=new Image();im.onload=()=>{const cv=$('#c-cv');cv.width=im.width;cv.height=im.height;cv.getContext('2d').drawImage(im,0,0)};im.src=S.cli.img}
   $('#c-tag').className='dz-tag'+(has&&S.cli.bg?' on':'');$('#c-tag').textContent='FONDO REMOVIDO ✓';
-  $('#c-tools').style.display=has?'':'none';$('#c-anal').style.display=has&&S.cli.an?'':'none';
+  $('#c-tools').style.display=has?'':'none';$('#c-ai').style.display=has?'':'none';if(has&&!S.cli.aiT)S.cli.aiT=(S.cli.an&&S.cli.an.cols<=6)?'logo':'producto';$$('#c-ai-t [data-ait]').forEach(b=>b.classList.toggle('on',b.dataset.ait===S.cli.aiT));$('#c-anal').style.display=has&&S.cli.an?'':'none';
   $('#c-bg').classList.toggle('on',S.cli.bg);$('#c-enh').classList.toggle('on',S.cli.enh);
   $('#c-info').innerHTML=has?'<span><b>'+S.cli.ow+' × '+S.cli.oh+' px</b></span><span>'+(origData?'':'Para cambiar ajustes, vuelve a subir tu archivo')+'</span>':'';
   if(!has||!S.cli.an)return;
@@ -2132,6 +2148,25 @@ function paintC1(){
   $('#c-anal-tip').innerHTML=GI+'<div>'+(r<500?'Tu imagen es pequeña: para bordado funciona, pero si tienes una versión más grande, súbela para un mejor resultado.':c>12?'Tu diseño tiene muchos colores. En bordado se simplifican a máximo 12–15 hilos; en DTF sale tal cual.':'Tu diseño está listo. '+(S.cli.bg?'Le quitamos el fondo para que se vea solo el logo.':'Si tiene fondo blanco y no lo quieres, activa "Quitar fondo".'))+'</div>';
 }
 $('#c-bg').addEventListener('click',()=>{if(!origData){toast('Vuelve a subir tu archivo para cambiar esto');return}S.cli.bg=!S.cli.bg;processImg()});
+/*AI*/
+/* --- Mejorar con IA (Gemini desde el servidor de BordaLink en Supabase) --- */
+const IA_URL='https://ubfcnkqqbkgdowztlgnn.supabase.co/functions/v1/ia-imagen',IA_KEY='sb_publishable_5RmtLPQGZqXGi73kkRCk7A_OcgDKSc2';
+let aiPrev=null;
+function aiStatus(t,err){const e=$('#c-ai-st');e.style.display=t?'':'none';e.innerHTML=t||'';e.style.color=err?'#fca5a5':''}
+function aiInput(){return new Promise((res,rej)=>{if(!origSrc&&!S.cli.img)return rej(new Error('Sube tu imagen primero'));const im=new Image();im.onload=()=>{const m=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);const g=c.getContext('2d');const png=S.cli.aiT==='logo';if(!png){g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height)}g.drawImage(im,0,0,c.width,c.height);const u=png?c.toDataURL('image/png'):c.toDataURL('image/jpeg',.92);res({data:u.split(',')[1],mime:png?'image/png':'image/jpeg',url:u})};im.onerror=()=>rej(new Error('No se pudo leer la imagen'));im.src=origSrc||S.cli.img})}
+$('#c-ai-t').addEventListener('click',e=>{const b=e.target.closest('[data-ait]');if(!b)return;S.cli.aiT=b.dataset.ait;$$('#c-ai-t [data-ait]').forEach(x=>x.classList.toggle('on',x===b));try{save()}catch(_){}});
+$('#c-ai-go').addEventListener('click',async()=>{const btn=$('#c-ai-go');if(btn.disabled)return;btn.disabled=true;$('#c-ai-res').style.display='none';
+  aiStatus('✨ Mejorando tu imagen con IA… esto tarda de 10 a 40 segundos.');
+  try{const inp=await aiInput();const r=await fetch(IA_URL,{method:'POST',headers:{'Content-Type':'application/json',apikey:IA_KEY,Authorization:'Bearer '+IA_KEY},body:JSON.stringify({tipo:S.cli.aiT||'producto',image:inp.data,mime:inp.mime})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok||!d.image){const m=d.code==='no_key'?'La mejora con IA aún no está activada en este taller.':d.code==='limite'?'Por hoy ya se usaron todas las mejoras con IA. Intenta mañana.':d.code==='pausa'?'La mejora con IA está en pausa.':(d.error||'No se pudo mejorar la imagen')+'. Intenta de nuevo.';throw new Error(m)}
+    aiPrev='data:'+(d.mime||'image/png')+';base64,'+d.image;$('#c-ai-a').src=inp.url;$('#c-ai-b').src=aiPrev;$('#c-ai-r').value=50;$('#c-ai-bw').style.clipPath='inset(0 0 0 50%)';
+    $('#c-ai-res').style.display='';aiStatus('Listo ('+(d.tam||'2K')+'). Mueve la barra para comparar.');
+  }catch(err){aiStatus(err.message||'No se pudo mejorar la imagen',true)}finally{btn.disabled=false}});
+$('#c-ai-r').addEventListener('input',e=>{$('#c-ai-bw').style.clipPath='inset(0 0 0 '+e.target.value+'%)'});
+$('#c-ai-ok').addEventListener('click',()=>{if(!aiPrev)return;aiFull=aiPrev;S.cli.ai={tipo:S.cli.aiT,fecha:Date.now()};loadImg(aiPrev,true);$('#c-ai-res').style.display='none';aiStatus('✓ Usando la versión mejorada con IA.');toast('Imagen mejorada con IA aplicada')});
+$('#c-ai-no').addEventListener('click',()=>{aiPrev=null;$('#c-ai-res').style.display='none';aiStatus('Te quedaste con la original.')});
+$('#c-ai-dl').addEventListener('click',()=>{if(!aiPrev)return;const a=document.createElement('a');a.href=aiPrev;a.download='bordalink-mejorada.'+(aiPrev.startsWith('data:image/jpeg')?'jpg':'png');document.body.appendChild(a);a.click();a.remove()});
 $('#c-enh').addEventListener('click',()=>{if(!origData){toast('Vuelve a subir tu archivo para cambiar esto');return}S.cli.enh=!S.cli.enh;processImg()});
 $('#c1-next').addEventListener('click',()=>{if(!S.cli.img)return;if(!$('#c1-ok').checked){toast('Confirma que tienes derecho a usar este diseño');return}go('s-c2')});
 $('#c1-back').addEventListener('click',()=>go(S.cliAcc?'s-chome':S.prod&&S.datos.nombre?'s-panel':'s-login'));
