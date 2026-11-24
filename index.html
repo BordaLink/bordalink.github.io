@@ -2218,7 +2218,7 @@ function buildEmb(im){
   const lab=new Int8Array(w*h).fill(-1),cnt=new Array(C.length).fill(0),bb=C.map(()=>[w,h,0,0]);
   for(let i=0;i<w*h;i++){if(d[i*4+3]<=110)continue;let bi=0,bd=1e9;for(let j=0;j<C.length;j++){const c=C[j],dd=(d[i*4]-c[0])**2+(d[i*4+1]-c[1])**2+(d[i*4+2]-c[2])**2;if(dd<bd){bd=dd;bi=j}}lab[i]=bi;cnt[bi]++;const x=i%w,y=(i/w)|0,b=bb[bi];if(x<b[0])b[0]=x;if(y<b[1])b[1]=y;if(x>b[2])b[2]=x;if(y>b[3])b[3]=y}
   // dibujar a 2x
-  const Z=2,cv=document.createElement('canvas');cv.width=w*Z;cv.height=h*Z;const g=cv.getContext('2d');
+  const Z=3,cv=document.createElement('canvas');cv.width=w*Z;cv.height=h*Z;const g=cv.getContext('2d');
   const L=(x,y)=>{x=Math.round(x);y=Math.round(y);return x<0||y<0||x>=w||y>=h?-1:lab[y*w+x]};
   // sombra/relieve
   const mk=document.createElement('canvas');mk.width=w;mk.height=h;const mx=mk.getContext('2d'),md=mx.createImageData(w,h);for(let i=0;i<w*h;i++)if(lab[i]>=0){md.data[i*4+3]=255}mx.putImageData(md,0,0);
@@ -2242,10 +2242,12 @@ function buildEmb(im){
     while(stk.length){const i=stk.pop();mem.push(i);if(D[i]>mxD)mxD=D[i];const x=i%w;for(const j of [x>0?i-1:-1,x<w-1?i+1:-1,i-w,i+w])if(j>=0&&j<N&&comp[j]<0&&lab[j]===l){comp[j]=nc;stk.push(j)}}
     if(mxD>=r)for(const i of mem)thick[i]=1;nc++}
   // sin núcleo grueso en su color → D2 queda INF → delgado
-  const thr=(col,f,x1,y1,x2,y2,wd)=>{const r0=Math.min(255,col[0]*f),g0=Math.min(255,col[1]*f),b0=Math.min(255,col[2]*f);
-    g.strokeStyle='rgb('+(r0*.66|0)+','+(g0*.66|0)+','+(b0*.66|0)+')';g.lineWidth=wd*1.1;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
-    g.strokeStyle='rgb('+(r0|0)+','+(g0|0)+','+(b0|0)+')';g.lineWidth=wd*.75;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
-    g.strokeStyle='rgba(255,255,255,'+(.15+R()*.2)+')';g.lineWidth=Z*.4;g.beginPath();g.moveTo(x1,y1-wd*.18);g.lineTo(x2,y2-wd*.18);g.stroke()};
+  const thr=(col,f,x1,y1,x2,y2,wd)=>{const ang=Math.atan2(y2-y1,x2-x1),sh=.55+.45*Math.abs(Math.cos(ang-0.75)),k=f*(.78+.34*sh);
+    const r0=Math.min(255,col[0]*k),g0=Math.min(255,col[1]*k),b0=Math.min(255,col[2]*k),nx=-(y2-y1),ny=x2-x1,nl=Math.hypot(nx,ny)||1,ox=nx/nl,oy=ny/nl;
+    g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=wd*1.25;g.beginPath();g.moveTo(x1+ox*.6,y1+oy*.6+.8);g.lineTo(x2+ox*.6,y2+oy*.6+.8);g.stroke();
+    g.strokeStyle='rgb('+(r0*.62|0)+','+(g0*.62|0)+','+(b0*.62|0)+')';g.lineWidth=wd*1.05;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+    g.strokeStyle='rgb('+(r0|0)+','+(g0|0)+','+(b0|0)+')';g.lineWidth=wd*.7;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+    const sp=Math.pow(sh,6)*.55+.06*R();g.strokeStyle='rgba(255,255,255,'+sp.toFixed(3)+')';g.lineWidth=wd*.28;g.beginPath();g.moveTo(x1-ox*wd*.18,y1-oy*wd*.18);g.lineTo(x2-ox*wd*.18,y2-oy*wd*.18);g.stroke()};
   // 1) TATAMI horizontal en las partes gruesas (regla de Argil: relleno siempre horizontal)
   order.forEach(l=>{if(!cnt[l])return;const col=C[l],len=3.6,step=1.8;
     for(let y=0.5,row=0;y<h;y+=step,row++){const off=((row*0.382)%1)*len*1.85;for(let x=-len*2+off;x<w;x+=len*1.85){const xi=Math.round(x),yi=Math.round(y);if(xi<0||xi>=w||yi>=h)continue;const i=yi*w+xi;if(lab[i]!==l||!thick[i])continue;
@@ -2274,9 +2276,30 @@ function buildEmb(im){
   EMB={src:S.cli.img,url:cv.toDataURL('image/png'),cv,lab,pal:C,w,h};
 }
 function fabricCanvas(W,H,hex){const c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');g.fillStyle=hex;g.fillRect(0,0,W,H);
-  const R=rnd(11);g.globalAlpha=.12;for(let i=-H;i<W;i+=3){g.strokeStyle=R()<.5?'#000':'#fff';g.lineWidth=1;g.beginPath();g.moveTo(i,0);g.lineTo(i+H,H);g.stroke()}
-  g.globalAlpha=.06;for(let i=0;i<2500;i++){g.fillStyle=R()<.5?'#000':'#fff';g.fillRect(R()*W,R()*H,1.5,1.5)}g.globalAlpha=1;
-  const v=g.createRadialGradient(W/2,H/2,W*.2,W/2,H/2,W*.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.45)');g.fillStyle=v;g.fillRect(0,0,W,H);return c}
+  const R=rnd(11),n=parseInt(hex.slice(1),16),lum=(((n>>16)&255)*.3+((n>>8)&255)*.59+(n&255)*.11)/255;
+  // tejido de punto (jersey): columnas de pequeñas "V"
+  const id=g.getImageData(0,0,W,H),p=id.data;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const col=x%4,row=y%3,v=(col<2?(row===col?1:0):(row===3-col?1:0));
+    const nz=(R()-.5)*.10+(v?.07:-.03)+Math.sin((x*.013+y*.004))*.025+Math.sin(y*.021+x*.002)*.02;const o=(y*W+x)*4,k=1+nz*(lum>.6?1.1:1.6);
+    p[o]=Math.max(0,Math.min(255,p[o]*k+(lum<.15?nz*60:0)));p[o+1]=Math.max(0,Math.min(255,p[o+1]*k+(lum<.15?nz*60:0)));p[o+2]=Math.max(0,Math.min(255,p[o+2]*k+(lum<.15?nz*60:0)))}
+  g.putImageData(id,0,0);
+  // arrugas suaves de la prenda
+  for(let i=0;i<6;i++){const x0=R()*W,y0=R()*H,a=R()*Math.PI,L=W*(.4+R()*.5),gr=g.createLinearGradient(x0-Math.sin(a)*40,y0+Math.cos(a)*40,x0+Math.sin(a)*40,y0-Math.cos(a)*40);
+    gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.45,'rgba(0,0,0,.10)');gr.addColorStop(.55,'rgba(255,255,255,.07)');gr.addColorStop(1,'rgba(0,0,0,0)');g.save();g.filter='blur(22px)';g.translate(x0,y0);g.rotate(a);g.fillStyle=gr;g.translate(-x0,-y0);g.fillRect(x0-L/2,y0-40,L,80);g.restore()}
+  // luz de estudio (arriba-izquierda) y viñeta
+  const kl=g.createRadialGradient(W*.28,H*.18,W*.05,W*.4,H*.35,W*.95);kl.addColorStop(0,'rgba(255,248,235,.20)');kl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=kl;g.fillRect(0,0,W,H);
+  const v=g.createRadialGradient(W/2,H/2,W*.25,W/2,H/2,W*.78);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=v;g.fillRect(0,0,W,H);return c}
+function embScene(g,im,f,W){
+  const sil=document.createElement('canvas');sil.width=im.width;sil.height=im.height;const sx=sil.getContext('2d');sx.drawImage(im,0,0);sx.globalCompositeOperation='source-in';sx.fillStyle='#000';sx.fillRect(0,0,sil.width,sil.height);
+  // fruncido de la tela alrededor (la tela se jala hacia el bordado)
+  g.save();g.filter='blur(18px)';g.globalAlpha=.28;g.drawImage(sil,f[0]-6,f[1]-2,f[2]+12,f[3]+14);g.restore();
+  // sombra de contacto (el bordado está levantado sobre la tela)
+  g.save();g.filter='blur(5px)';g.globalAlpha=.6;g.drawImage(sil,f[0]+3,f[1]+6,f[2],f[3]);g.restore();
+  g.save();g.filter='blur(1.5px)';g.globalAlpha=.5;g.drawImage(sil,f[0]+1,f[1]+2,f[2],f[3]);g.restore();
+  g.save();g.filter='contrast(1.08) saturate(1.06)';g.drawImage(im,...f);g.restore();
+  // misma luz de estudio sobre el hilo + grano de cámara
+  g.save();g.globalCompositeOperation='soft-light';const kl=g.createLinearGradient(0,0,W,W);kl.addColorStop(0,'rgba(255,255,255,.35)');kl.addColorStop(.6,'rgba(128,128,128,0)');kl.addColorStop(1,'rgba(0,0,0,.35)');g.fillStyle=kl;g.fillRect(0,0,W,W);g.restore();
+  const R=rnd(5),id=g.getImageData(0,0,W,W),p=id.data;for(let i=0;i<p.length;i+=4){const nz=(R()-.5)*10;p[i]+=nz;p[i+1]+=nz;p[i+2]+=nz}g.putImageData(id,0,0)}
 let ctab='emb',zsel=0;
 function artFor(tec){return tec==='Bordado'&&EMB.src===S.cli.img&&EMB.url?EMB.url:S.cli.img}
 async function renderTab(){
@@ -2294,7 +2317,7 @@ async function renderTab(){
   else if(ctab==='vec'){await ensureEmb();g.fillStyle='#f4f4f8';g.fillRect(0,0,W,W);if(EMB.lab){const c=document.createElement('canvas');c.width=EMB.w;c.height=EMB.h;const x=c.getContext('2d'),dd=x.createImageData(EMB.w,EMB.h);for(let i=0;i<EMB.w*EMB.h;i++){const l=EMB.lab[i];if(l<0)continue;const p=EMB.pal[l];dd.data[i*4]=p[0];dd.data[i*4+1]=p[1];dd.data[i*4+2]=p[2];dd.data[i*4+3]=255}x.putImageData(dd,0,0);g.imageSmoothingEnabled=true;g.filter='blur(.6px) contrast(1.6)';const f=fit(EMB.w,EMB.h,60);g.drawImage(c,...f);g.filter='none'}}
   else{g.drawImage(fabricCanvas(W,W,hex),0,0);const f=fit(im.width,im.height,ctab==='emb'?70:90);
     if(ctab==='dtf'){g.globalAlpha=.97;g.drawImage(im,...f);g.globalAlpha=1;g.globalCompositeOperation='multiply';g.globalAlpha=.25;g.drawImage(fabricCanvas(W,W,'#ffffff'),0,0);g.globalAlpha=1;g.globalCompositeOperation='source-over'}
-    else{g.drawImage(im,...f);
+    else{embScene(g,im,f,W);
       const zc=[[.5,.5,'Centro'],[.3,.3,'Detalle'],[.7,.72,'Borde']];
       $('#c-zooms').innerHTML=zc.map((z,i)=>'<div class="'+(i===zsel?'on':'')+'" data-z="'+i+'"><canvas width="240" height="180"></canvas><span>'+z[2]+'</span></div>').join('');
       $$('#c-zooms canvas').forEach((zcv,i)=>{const zg=zcv.getContext('2d'),zw=W*.22,zh=zw*.75,sx=f[0]+f[2]*zc[i][0]-zw/2,sy=f[1]+f[3]*zc[i][1]-zh/2;zg.drawImage(out,sx,sy,zw,zh,0,0,240,180)});
