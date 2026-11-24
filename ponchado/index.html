@@ -53,6 +53,8 @@ input[type=number],select{background:var(--sup2);border:1px solid var(--linea);c
   <div class="row">
     <div class="f"><label>Ancho del bordado (cm)</label><input id="ancho" type="number" min="2" max="40" step="0.5" value="10"></div>
     <div class="f"><label>Agujas de la máquina</label><select id="agujas"><option value="9">9</option><option value="12">12</option><option value="15">15</option></select></div>
+    <div class="f"><label>Velocidad (ppm)</label><input id="ppm" type="number" min="300" max="1200" step="50" value="700"></div>
+    <div class="f"><label>Cabezas</label><select id="cab"><option value="1">1</option><option value="2" selected>2</option><option value="4">4</option><option value="6">6</option></select></div>
     <label class="chk"><input id="fondo" type="checkbox"> Bordar también el fondo</label>
   </div>
   <div class="estado" id="est1"></div>
@@ -146,13 +148,15 @@ function mostrar() {
   const txt = { VERDE: 'VERDE · listo para bordar', AMARILLO: 'AMARILLO · revisar antes de vender', ROJO: 'ROJO · no se puede entregar así' };
   $('#sem').className = 'sem ' + rev.nivel; $('#semT').textContent = txt[rev.nivel]; $('#semA').textContent = rev.avisos.length ? rev.avisos.join(' · ') : 'Pasó la revisión automática: sin puntadas peligrosas ni saltos sin corte.';
   const cm = (PW / 100).toFixed(1) + ' × ' + (PH / 100).toFixed(1);
-  $('#stats').innerHTML = [[rev.puntadas.toLocaleString('es-MX'), 'puntadas'], [rev.colores, 'colores'], [rev.cambios, 'cambios de hilo'], [rev.cortes, 'cortes'], ['~' + Math.round(rev.minutos + rev.cortes * 2.5 / 60), 'min a 650 ppm']].map(([a, b]) => `<div class="stat"><b>${a}</b><span>${b}</span></div>`).join('');
+  $('#stats').innerHTML = [[rev.puntadas.toLocaleString('es-MX'), 'puntadas'], [rev.colores, 'colores'], [rev.cambios, 'cambios de hilo'], [rev.cortes, 'cortes'], [tiempo(), 'min por pieza']].map(([a, b]) => `<div class="stat"><b>${a}</b><span>${b}</span></div>`).join('');
   $('#hoja').innerHTML = '<b style="font-size:13px;color:var(--suave)">ORDEN DE HILOS</b>' + plan.map((L, i) => `<div><span>${i + 1}.</span><i style="background:${L.hex}"></i><span style="text-transform:capitalize">${L.nombre}</span></div>`).join('');
   segs = []; plan.forEach(L => L.runs.forEach(r => { for (let i = 1; i < r.length; i++) segs.push([L.hex, r[i - 1], r[i]]); })); total = segs.length;
   $('#slider').value = 1000; dibujar(total);
   const ok = rev.nivel === 'VERDE'; $('#dl').disabled = !ok;
   $('#dlNota').textContent = ok ? 'El DST no guarda colores: usa el orden de hilos de arriba.' : 'Este diseño necesita revisión de un especialista antes de bordarse. Ajusta las capas (por ejemplo relleno Medio) o pide "Ponchado por especialista".';
 }
+function tiempo() { const ppm = +$('#ppm').value || 700, cab = +$('#cab').value || 1; const m = rev.puntadas / ppm; return (m / cab).toFixed(1); }
+['#ppm', '#cab'].forEach(s => $(s).addEventListener('change', () => { if (rev) mostrar(); }));
 function sh(h, k) { const n = parseInt(h.slice(1), 16); return `rgb(${Math.min(255, ((n >> 16) & 255) * k) | 0},${Math.min(255, ((n >> 8) & 255) * k) | 0},${Math.min(255, (n & 255) * k) | 0})`; }
 function dibujar(hasta) {
   const cv = $('#cv'), S = Math.min(1, 1100 / PW), pad = 16; cv.width = Math.round(PW * S + 2 * pad); cv.height = Math.round(PH * S + 2 * pad);
