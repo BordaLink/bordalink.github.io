@@ -2164,7 +2164,7 @@ $('#c-ai-go').addEventListener('click',async()=>{const btn=$('#c-ai-go');if(btn.
     if(!r.ok||!d.image){const m=d.code==='no_key'?'La mejora con IA aún no está activada en este taller.':d.code==='limite'?'Por hoy ya se usaron todas las mejoras con IA. Intenta mañana.':d.code==='pausa'?'La mejora con IA está en pausa.':(d.error||'No se pudo mejorar la imagen')+'. Intenta de nuevo.';throw new Error(m)}
     aiPrev='data:'+(d.mime||'image/png')+';base64,'+d.image;$('#c-ai-a').src=inp.url;$('#c-ai-b').src=aiPrev;$('#c-ai-r').value=50;$('#c-ai-bw').style.clipPath='inset(0 0 0 50%)';
     $('#c-ai-res').style.display='';aiStatus('Listo ('+(d.tam||'2K')+'). Mueve la barra para comparar.');
-  }catch(err){aiStatus(err.message||'No se pudo mejorar la imagen',true)}finally{btn.disabled=false}});
+  }catch(err){aiStatus(/fetch|network|load failed/i.test(err.message||'')?'No hay conexión con el servidor de IA desde aquí. Abre la app en <b>bordalink.github.io</b> para usar la IA.':(err.message||'No se pudo mejorar la imagen'),true)}finally{btn.disabled=false}});
 $('#c-hr-go').addEventListener('click',async()=>{const b=$('#c-hr-go'),st=$('#c-hr-st');if(b.disabled)return;
   if(!S.premium&&!confirm('La vista hiperreal es parte de Premium. ¿Probarla ahora?'))return;b.disabled=true;st.textContent='✨ Generando la foto realista de tu bordado… 15 a 40 segundos.';
   try{const src=origSrc||S.cli.img;if(!src)throw new Error('Sube tu diseño primero');const im=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('No se pudo leer la imagen'));i.src=src});
@@ -2172,7 +2172,7 @@ $('#c-hr-go').addEventListener('click',async()=>{const b=$('#c-hr-go'),st=$('#c-
     const r=await fetch(IA_URL,{method:'POST',headers:{'Content-Type':'application/json',apikey:IA_KEY,Authorization:'Bearer '+IA_KEY},body:JSON.stringify({tipo:'bordado_hiperreal',image:c.toDataURL('image/jpeg',.92).split(',')[1],mime:'image/jpeg',detalle:(()=>{let p='';try{p=(curProd()||{}).n||''}catch(_){}return 'Prenda: '+(p||'playera')+'; color de tela: '+(S.cli.color||'blanco')+(COLHEX[S.cli.color]?' ('+COLHEX[S.cli.color]+')':'')})()})});
     const d=await r.json().catch(()=>({}));if(!r.ok||!d.image)throw new Error(d.code==='no_key'?'La IA aún no está activada.':d.code==='limite'?'Por hoy ya se usaron todas las vistas con IA.':(d.error||'No se pudo generar')+'. Intenta de nuevo.');
     const u='data:'+(d.mime||'image/png')+';base64,'+d.image;$('#c-hr-img').src=u;$('#c-hr-img').style.display='';st.textContent='Listo. Es una simulación con IA; el bordado real lo confirma el taller.';
-  }catch(e){st.textContent='⚠️ '+(e.message||e)}finally{b.disabled=false}});
+  }catch(e){st.textContent='⚠️ '+(/fetch|network|load failed/i.test(e.message||'')?'No hay conexión con el servidor de IA desde aquí. Abre la app en bordalink.github.io para usar la IA.':(e.message||e))}finally{b.disabled=false}});
 $('#c-ai-r').addEventListener('input',e=>{$('#c-ai-bw').style.clipPath='inset(0 0 0 '+e.target.value+'%)'});
 $('#c-ai-ok').addEventListener('click',()=>{if(!aiPrev)return;aiFull=aiPrev;S.cli.ai={tipo:S.cli.aiT,fecha:Date.now()};loadImg(aiPrev,true);$('#c-ai-res').style.display='none';aiStatus('✓ Usando la versión mejorada con IA.');toast('Imagen mejorada con IA aplicada')});
 $('#c-ai-no').addEventListener('click',()=>{aiPrev=null;$('#c-ai-res').style.display='none';aiStatus('Te quedaste con la original.')});
