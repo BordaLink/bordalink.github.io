@@ -1627,7 +1627,7 @@ $('#b-edit').addEventListener('click',()=>go('s-cuenta'));
 
 /* ================= FINANZAS ================= */
 const num=v=>{const n=parseFloat(String(v||'').replace(/[^\d.]/g,''));return isNaN(n)?0:n};
-const $f=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString('es-MX');
+const $f=n=>{const a=Math.abs(n),c=Math.abs(a-Math.round(a))>0.004;return (n<0?'-$':'$')+(c?a.toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2}):Math.round(a).toLocaleString('es-MX'))};
 const pct=n=>Math.round(n*100)+'%';
 const GI='<div class="gi"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg></div>';
 
@@ -2232,7 +2232,7 @@ function buildEmb(im){
   const L=(x,y)=>{x=Math.round(x);y=Math.round(y);return x<0||y<0||x>=w||y>=h?-1:lab[y*w+x]};
   // sombra/relieve
   const mk=document.createElement('canvas');mk.width=w;mk.height=h;const mx=mk.getContext('2d'),md=mx.createImageData(w,h);for(let i=0;i<w*h;i++)if(lab[i]>=0){md.data[i*4+3]=255}mx.putImageData(md,0,0);
-  g.save();g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=10;g.shadowOffsetY=4;g.globalAlpha=.9;g.drawImage(mk,0,0,w*Z,h*Z);g.restore();
+  if(!window.EMB_DTF){g.save();g.shadowColor='rgba(0,0,0,.6)';g.shadowBlur=10;g.shadowOffsetY=4;g.globalAlpha=.9;g.drawImage(mk,0,0,w*Z,h*Z);g.restore();}
   const R=rnd(7),order=C.map((c,i)=>i).sort((a,b)=>cnt[b]-cnt[a]);
   g.lineCap='round';
   // --- distancia a la orilla (para saber qué es delgado = plumetis y qué es grueso = tatami) ---
@@ -2345,7 +2345,7 @@ async function renderTab(){
   $('#c-aiex').style.display=ctab==='emb'?'':'none';
   const locked=ctab==='emb';
   if(locked){const w=document.createElement('div');w.className='wm';w.innerHTML=Array(18).fill('<span>BORDALINK · VISTA PREVIA</span>').join('');$('#c-tcv').appendChild(w)}
-  $('#c-texp').innerHTML={orig:'Tu archivo ya preparado'+(S.cli.bg?' y sin fondo':'')+'.',vec:'Así quedaría vectorizado para CorelDRAW: colores planos y bordes limpios. El archivo final lo vectoriza el taller.',emb:'Simulación de puntadas con '+(EMB.pal?EMB.pal.length:'')+' colores de hilo. En tamaño mediano serían <b>≈ '+estPunt('Mediano').punt.toLocaleString('es-MX')+' puntadas</b> ('+estPunt('Mediano').lab.toLowerCase()+'). La vista sin marca de agua va <b>incluida si pides el producto</b> o la compras sola. El acabado real lo afina el digitalizador.',dtf:'Impresión a todo color sobre la tela. Ideal para diseños con muchos colores o degradados.'}[ctab];
+  $('#c-texp').innerHTML={orig:'Tu archivo ya preparado'+(S.cli.bg?' y sin fondo':'')+'.',vec:'Así queda vectorizado: colores planos y bordes limpios. Con el Archivo vectorizado te llevas el SVG editable (abre en CorelDRAW e Illustrator).',emb:'Simulación de puntadas con '+(EMB.pal?EMB.pal.length:'')+' colores de hilo. En tamaño mediano serían <b>≈ '+estPunt('Mediano').punt.toLocaleString('es-MX')+' puntadas</b> ('+estPunt('Mediano').lab.toLowerCase()+'). La vista sin marca de agua va <b>incluida si pides el producto</b> o la compras sola. El acabado real lo afina el digitalizador.',dtf:'Impresión a todo color sobre la tela. Ideal para diseños con muchos colores o degradados.'}[ctab];
   if(ctab==='emb')S.cli.tec='Bordado';if(ctab==='dtf')S.cli.tec='DTF';save();tecTip();paintWant();
 }
 function tecTip(){$('#c-tec-tip').innerHTML=GI+'<div>'+(S.cli.tec==='Bordado'?'<b>Bordado:</b> hilo cosido, dura años y se ve premium. Ideal para gorras, polos y uniformes.':'<b>DTF:</b> impresión a todo color, perfecta para fotos, degradados y muchos colores. Se siente suave y aguanta lavadas.')+'</div>'}
@@ -2489,9 +2489,9 @@ function paintWant(){const files=!S.cli.phys;$$('#c-want [data-want]').forEach(b
 function renderC2(){cbiz();curProd();if(ctab!=='fin')ctab=S.cli.tec==='DTF'?'dtf':'emb';renderTab()}
 
 /* --- paso 3: pedido --- */
-const DIG=[['prev','Vista limpia del efecto bordado','Imagen sin marca de agua para compartir',29,0],['vec','Archivo para CorelDRAW','Vector editable: CDR, SVG, PDF, AI, EPS',79,79],['embdtf','Imagen efecto bordado para DTF','Simulación realista de bordado · PNG 300 DPI',99,99],['dtf','Imagen directa para DTF','Lista para imprimir, fondo transparente',99,99],['dst','Archivo DST','Para tu bordadora',149,25],['emb','Archivo EMB','Editable en Wilcom',199,40],['combo','Combo DST + EMB','El mejor valor en archivos de bordado',299,55]];
-function fileListHTML(){const phys=S.cli.phys&&cliQty()>0;const recT={vec:['vec'],emb:['dst','emb','combo','embdtf','prev'],dtf:['dtf','embdtf'],orig:[],fin:[]}[ctab]||[];
-  return '<div class="dig on" style="cursor:default"><span class="ck"></span><div class="tx"><b>Imagen HD mejorada</b><span>Limpieza y mejora de calidad</span></div><div class="pr"><b style="color:#4ade80">GRATIS</b></div></div>'+DIG.map(d=>{const pr=digPrice(d),on=!!S.cli.dig[d[0]];return '<button class="dig'+(on?' on':'')+'" data-dg="'+d[0]+'"><span class="ck"></span><div class="tx"><b>'+d[1]+(d[0]==='combo'?'<span class="best">MEJOR VALOR</span>':recT.includes(d[0])&&!phys?'<span class="rec2">PARA ESTA VISTA</span>':'')+'</b><span>'+d[2]+'</span></div><div class="pr">'+(pr===0?'<b style="color:#4ade80">Incluido</b>':(phys&&d[4]<d[3]?'+':'')+$f(pr))+(phys&&pr<d[3]?'<s>'+$f(d[3])+'</s>':'')+'</div></button>'}).join('')+'<div class="mini-l" style="margin-top:10px">Los archivos de bordado (DST, EMB) y el vector los prepara el taller y se entregan en 24–48 h.'+(phys?' Precio especial porque también pides el producto.':' Si además pides la prenda, salen mucho más baratos.')+'</div>'}
+const DIG=[['prev','Efecto bordado','Imagen limpia sin marca de agua + PNG sin fondo listo para DTF',79.99,0],['vec','Archivo vectorizado','SVG editable · ábrelo en CorelDRAW o Illustrator',79,79],['dst','Archivo DST','Para tu bordadora',149,25],['emb','Archivo EMB','Editable en Wilcom',199,40],['combo','Combo DST + EMB','El mejor valor en archivos de bordado',299,55]];
+function fileListHTML(){const phys=S.cli.phys&&cliQty()>0;const recT={vec:['vec'],emb:['dst','emb','combo','prev'],dtf:['prev'],orig:[],fin:[]}[ctab]||[];
+  return '<div class="dig on" style="cursor:default"><span class="ck"></span><div class="tx"><b>Imagen HD mejorada</b><span>Limpieza y mejora de calidad</span></div><div class="pr"><b style="color:#4ade80">GRATIS</b></div></div>'+DIG.map(d=>{const pr=digPrice(d),on=!!S.cli.dig[d[0]];return '<button class="dig'+(on?' on':'')+'" data-dg="'+d[0]+'"><span class="ck"></span><div class="tx"><b>'+d[1]+(d[0]==='combo'?'<span class="best">MEJOR VALOR</span>':recT.includes(d[0])&&!phys?'<span class="rec2">PARA ESTA VISTA</span>':'')+'</b><span>'+d[2]+'</span></div><div class="pr">'+(pr===0?'<b style="color:#4ade80">Incluido</b>':(phys&&d[4]<d[3]?'+':'')+$f(pr))+(phys&&pr<d[3]?'<s>'+$f(d[3])+'</s>':'')+'</div></button>'}).join('')+'<div class="mini-l" style="margin-top:10px">El efecto bordado y el archivo vectorizado se descargan al momento. Los archivos de bordado (DST, EMB) los prepara el taller en 24–48 h.'+(phys?' Precio especial porque también pides el producto.':' Si además pides la prenda, salen mucho más baratos.')+'</div>'}
 function toggleDig(k){S.cli.dig[k]=!S.cli.dig[k];if(k==='combo'&&S.cli.dig.combo){S.cli.dig.dst=false;S.cli.dig.emb=false}if((k==='dst'||k==='emb')&&S.cli.dig[k])S.cli.dig.combo=false;if(S.cli.dig.dst&&S.cli.dig.emb){S.cli.dig.dst=S.cli.dig.emb=false;S.cli.dig.combo=true;toast('Te pusimos el combo: sale más barato')}save()}
 function digPrice(d){const phys=S.cli.phys&&cliQty()>0;if(d[0]==='prev')return phys&&S.cli.tec==='Bordado'?0:d[3];return phys?d[4]:d[3]}
 function cliQty(){const p=curProd();if(!p)return 0;return Object.values(S.cli.qt||{}).reduce((a,v)=>a+num(v),0)}
@@ -2606,7 +2606,7 @@ function renderC5(){cbiz();const o=S.clientOrders.find(x=>x.folio===S.lastOrder)
   $('#c-tl').innerHTML=T.map(t=>'<div class="ti '+(t[2]===1?'done':t[2]===2?'now':'')+'"><span class="c">'+(t[2]===1?'✓':'')+'</span><div><b>'+t[0]+'</b>'+(t[1]?'<span>'+t[1]+'</span>':'')+'</div></div>').join('');
   $('#c-res').innerHTML=(isPhys?(o.m3&&o.m3!=='pers'?'<div class="qline"><span>Tipo</span><b>'+(o.m3==='solo'?'Solo artículos':'Bordado en tus prendas')+'</b></div>':'')+(o.sexo?'<div class="qline"><span>Para</span><b>'+o.sexo+'</b></div>':'')+(o.spec?'<div class="qline"><span>Especificación</span><b>'+esc(o.spec)+'</b></div>':'')+'<div class="qline"><span>Producto</span><b>'+esc(p?p.n:'')+' × '+o.q+'</b></div><div class="qline"><span>'+(o.spec?'Técnica':'Color / técnica')+'</span><b>'+(o.spec?'Impresión digital':esc(o.color)+' · '+o.tec)+'</b></div>'+(o.size?'<div class="qline"><span>Tamaño de bordado</span><b>'+o.size+'</b></div>':'')+(o.punt?'<div class="qline"><span>Puntadas estimadas</span><b>≈ '+o.punt.toLocaleString('es-MX')+' por pieza</b></div>':'')+'<div class="qline"><span>Entrega</span><b>'+esc(o.ent)+'</b></div>'+(p&&num(p.dias)?'<div class="qline"><span>Entrega estimada</span><b>'+num(p.dias)+' días hábiles</b></div>':''):'')+'<div class="qline tot"><span>Total pagado</span><b>'+$f(o.tot)+'</b></div>';
   $('#c-fblock').style.display=o.dig.length?'':'none';
-  $('#c-fl').innerHTML=o.dig.map(d=>{const ready=d.k==='prev';return '<div class="fl"><b>'+d.n+'</b><span class="'+(ready?'b-grn':'b-amb')+'">'+(ready?'Listo':'24–48 h')+'</span></div>'}).join('')+'<div class="mini-l" style="margin-top:8px">Las descargas se activan aquí cuando conectemos el servidor.</div>';
+  $('#c-fl').innerHTML=o.dig.map(d=>{const k=d.k==='embdtf'||d.k==='dtf'?'prev':d.k,ready=k==='prev'||k==='vec';return '<div class="fl"><b>'+(k==='prev'?'Efecto bordado':k==='vec'?'Archivo vectorizado':d.n)+'</b>'+(ready?'<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+(k==='prev'?'<button class="lnk" data-dl="emb" style="background:none;border:1px solid #4ade80;color:#4ade80;border-radius:8px;padding:3px 8px;font-size:12px">Imagen</button><button class="lnk" data-dl="dtf" style="background:none;border:1px solid #4ade80;color:#4ade80;border-radius:8px;padding:3px 8px;font-size:12px">PNG DTF</button>':'<button class="lnk" data-dl="svg" style="background:none;border:1px solid #4ade80;color:#4ade80;border-radius:8px;padding:3px 8px;font-size:12px">Descargar SVG</button>')+'</span>':'<span class="b-amb">24–48 h</span>')+'</div>'}).join('')+'<div class="mini-l" style="margin-top:8px">El efecto bordado y el vector se generan en tu celular al momento. DST y EMB los entrega el taller.</div>';
 }
 $('#c-new').addEventListener('click',()=>{S.cli=Object.assign(S.cli,{img:null,an:null,qt:{},dig:{},size:0,phys:true});origData=null;save();go('s-c1')});
 $('#c-owner').addEventListener('click',()=>{if(S.datos.nombre){go('s-panel');toast('El pedido ya aparece en tu panel')}else toast('Primero configura tu taller como dueño para ver el panel')});
@@ -2798,6 +2798,60 @@ HELP['s-chome']=['Tu cuenta','Todo tu historial en un lugar.',['En <b>Mis pedido
      try{save()}catch(err){o.hr=c.toDataURL('image/jpeg',.7);try{save()}catch(_){toast('No hay espacio para guardar la imagen');return}}
      toast('Vista hiperreal agregada al pedido '+fol);try{renderPanel()}catch(_){}};im.src=u})}
 
+// ===== Descargas: efecto bordado (PNG) y archivo vectorizado (SVG) =====
+function saveBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+function loadIm(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('No se pudo leer el diseño'));i.src=src})}
+async function dlFile(o,kind,btn){const old=btn&&btn.textContent;if(btn){btn.disabled=true;btn.textContent='Generando…'}
+  try{const im=await loadIm(o.img);const name=(o.folio||'bordalink').toLowerCase();
+    if(kind==='svg'){const svg=vectorize(im);saveBlob(new Blob([svg],{type:'image/svg+xml'}),name+'-vector.svg');toast('Archivo vectorizado descargado')}
+    else{const keep=EMB;window.EMB_DTF=kind==='dtf';buildEmb(im);window.EMB_DTF=false;const cv=EMB.cv;EMB=keep;
+      if(kind==='dtf'){cv.toBlob(b=>saveBlob(b,name+'-bordado-dtf.png'),'image/png');toast('PNG sin fondo listo para DTF')}
+      else{const W=Math.max(cv.width,cv.height)+160,c=document.createElement('canvas');c.width=W;c.height=W;const g=c.getContext('2d');g.drawImage(fabricCanvas(W,W,COLHEX[o.color]||'#f2f2f2'),0,0);embScene(g,cv,[(W-cv.width)/2,(W-cv.height)/2,cv.width,cv.height],W);c.toBlob(b=>saveBlob(b,name+'-efecto-bordado.jpg'),'image/jpeg',.93);toast('Imagen con efecto bordado descargada')}}
+  }catch(err){toast(err.message||'No se pudo generar')}finally{if(btn){btn.disabled=false;btn.textContent=old}}}
+// Vectorizador: colores planos + contornos suaves (marching squares + simplificación) → SVG editable por capas de color
+function vectorize(im,K){
+  const M=700,s=Math.min(1,M/Math.max(im.width,im.height)),w=Math.max(2,Math.round(im.width*s)),h=Math.max(2,Math.round(im.height*s));
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);const d=x.getImageData(0,0,w,h).data,N=w*h;
+  // fondo: color dominante del borde (o transparente)
+  let tr=0;for(let i=0;i<N;i++)if(d[i*4+3]<128)tr++;const useA=tr>N*.02;
+  const pts=[];for(let i=0;i<N;i+=2)if(d[i*4+3]>=128)pts.push([d[i*4],d[i*4+1],d[i*4+2]]);if(!pts.length)throw new Error('La imagen está vacía');
+  K=K||Math.min(10,Math.max(2,(S.cli.an&&S.cli.an.cols||6)+1));const C=[pts[0].slice()];
+  while(C.length<K){let best=null,bd=-1;for(let i=0;i<pts.length;i+=5){const p=pts[i];let md=1e9;for(const q of C){const e=(p[0]-q[0])**2+(p[1]-q[1])**2+(p[2]-q[2])**2;if(e<md)md=e}if(md>bd){bd=md;best=p}}if(bd<500)break;C.push(best.slice())}
+  for(let it=0;it<8;it++){const acc=C.map(()=>[0,0,0,0]);for(let i=0;i<pts.length;i+=2){const p=pts[i];let bi=0,bd=1e9;C.forEach((q,j)=>{const e=(p[0]-q[0])**2+(p[1]-q[1])**2+(p[2]-q[2])**2;if(e<bd){bd=e;bi=j}});const a=acc[bi];a[0]+=p[0];a[1]+=p[1];a[2]+=p[2];a[3]++}acc.forEach((a,j)=>{if(a[3])C[j]=[a[0]/a[3],a[1]/a[3],a[2]/a[3]]})}
+  let lab=new Int16Array(N).fill(-1);for(let i=0;i<N;i++){if(d[i*4+3]<128)continue;let bi=0,bd=1e9;for(let j=0;j<C.length;j++){const q=C[j],e=(d[i*4]-q[0])**2+(d[i*4+1]-q[1])**2+(d[i*4+2]-q[2])**2;if(e<bd){bd=e;bi=j}}lab[i]=bi}
+  // filtro de mayoría 5x5 para quitar ruido de bordes
+  {const L2=new Int16Array(N),cnt=new Int32Array(C.length+1);for(let y=0;y<h;y++)for(let xx=0;xx<w;xx++){cnt.fill(0);for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const yy=Math.min(h-1,Math.max(0,y+dy)),xq=Math.min(w-1,Math.max(0,xx+dx));cnt[lab[yy*w+xq]+1]++}let b=0;for(let k=1;k<cnt.length;k++)if(cnt[k]>cnt[b])b=k;L2[y*w+xx]=b-1}lab=L2}
+  // fondo opaco: si un color domina el borde, se deja como fondo aparte
+  const area=new Int32Array(C.length);for(let i=0;i<N;i++)if(lab[i]>=0)area[lab[i]]++;
+  const order=C.map((_,i)=>i).filter(i=>area[i]>N*.0005).sort((a,b)=>area[b]-area[a]);
+  const hex=q=>'#'+q.map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+  const rdp=(P,eps)=>{if(P.length<4)return P;let dm=0,ix=0;const a=P[0],b=P[P.length-1],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1;for(let i=1;i<P.length-1;i++){const dd=Math.abs(dy*P[i][0]-dx*P[i][1]+b[0]*a[1]-b[1]*a[0])/L;if(dd>dm){dm=dd;ix=i}}if(dm>eps){const l=rdp(P.slice(0,ix+1),eps),r=rdp(P.slice(ix),eps);return l.slice(0,-1).concat(r)}return [a,b]};
+  const paths=[];const sc=1/s;
+  for(const l of order){
+    // marching squares sobre la máscara (con margen) → segmentos → lazos cerrados
+    const W2=w+2,H2=h+2,m=(xx,yy)=>xx>0&&yy>0&&xx<=w&&yy<=h&&lab[(yy-1)*w+(xx-1)]===l?1:0;
+    const seg=new Map(),key=(a,b)=>a+','+b;
+    const add=(x1,y1,x2,y2)=>{const k=key(x1,y1);(seg.get(k)||seg.set(k,[]).get(k)).push([x2,y2])};
+    for(let yy=0;yy<H2-1;yy++)for(let xx=0;xx<W2-1;xx++){const a=m(xx,yy),b=m(xx+1,yy),cc=m(xx+1,yy+1),dd=m(xx,yy+1),v=a*8+b*4+cc*2+dd;if(v===0||v===15)continue;
+      // puntos medios en coordenadas x2 (enteros): arriba, derecha, abajo, izquierda
+      const T=[xx*2+1,yy*2],R=[xx*2+2,yy*2+1],B=[xx*2+1,yy*2+2],Lf=[xx*2,yy*2+1];
+      const S2={1:[[Lf,B]],2:[[B,R]],3:[[Lf,R]],4:[[R,T]],5:[[Lf,T],[R,B]],6:[[B,T]],7:[[Lf,T]],8:[[T,Lf]],9:[[T,B]],10:[[T,R],[B,Lf]],11:[[T,R]],12:[[R,Lf]],13:[[R,B]],14:[[B,Lf]]}[v];
+      for(const [p,q] of S2)add(p[0],p[1],q[0],q[1])}
+    let dstr='';
+    for(const [k0] of seg){let lst=seg.get(k0);while(lst&&lst.length){let [sx,sy]=k0.split(',').map(Number);const loop=[[sx,sy]];let cur=lst.pop();let guard=0;
+        while(cur&&guard++<200000){loop.push(cur);const k=key(cur[0],cur[1]);if(cur[0]===sx&&cur[1]===sy)break;const nx=seg.get(k);cur=nx&&nx.length?nx.pop():null}
+        if(loop.length<8)continue;const Q=loop.slice(0,-1).map(p=>[p[0]/2-.5,p[1]/2-.5]),hm=Q.length>>1;let P=rdp(Q.slice(0,hm+1),.7).slice(0,-1).concat(rdp(Q.slice(hm).concat([Q[0]]),.7));if(P.length<4)continue;{let ar=0;for(let i=0;i<Q.length;i++){const u=Q[i],v=Q[(i+1)%Q.length];ar+=u[0]*v[1]-v[0]*u[1]}if(Math.abs(ar)/2<Math.max(25,N*.00012))continue}
+        // curvas suaves: Catmull-Rom → Bézier
+        const n=P.length-1,f=v=>(v*sc).toFixed(1);dstr+='M'+f(P[0][0])+' '+f(P[0][1]);
+        const shp=(a,b,c)=>{const ux=a[0]-b[0],uy=a[1]-b[1],vx=c[0]-b[0],vy=c[1]-b[1];const cs=(ux*vx+uy*vy)/((Math.hypot(ux,uy)*Math.hypot(vx,vy))||1);return cs>-0.8};
+        for(let i=0;i<n;i++){const p0=P[(i-1+n)%n],p1=P[i],p2=P[i+1],p3=P[(i+2)%n||1];const t1=shp(p0,p1,p2)?0:.16,t2=shp(p1,p2,p3)?0:.16;
+          const c1=[p1[0]+(p2[0]-p0[0])*t1,p1[1]+(p2[1]-p0[1])*t1],c2=[p2[0]-(p3[0]-p1[0])*t2,p2[1]-(p3[1]-p1[1])*t2];
+          dstr+='C'+f(c1[0])+' '+f(c1[1])+' '+f(c2[0])+' '+f(c2[1])+' '+f(p2[0])+' '+f(p2[1])}
+        dstr+='Z'}}
+    if(dstr)paths.push('<path id="color-'+(paths.length+1)+'" fill="'+hex(C[l])+'" fill-rule="evenodd" d="'+dstr+'"/>')}
+  const W=Math.round(w*sc),H=Math.round(h*sc);
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">\n<title>Vectorizado por BordaLink</title>\n'+paths.join('\n')+'\n</svg>\n'}
+
 /* ================= PLANTILLAS ================= */
 const TPLC=['#1e3a8a','#b91c1c','#14532d','#111111','#7c3aed','#c2410c'];let tpCol=TPLC[0];
 function tplDraw(k,t1,t2,ini,col){const c=document.createElement('canvas');c.width=c.height=360;const g=c.getContext('2d');g.textAlign='center';g.textBaseline='middle';
@@ -2867,6 +2921,8 @@ const invS=document.createElement('div');invS.className='sheet';document.body.ap
 invS.addEventListener('click',e=>{if(e.target===invS||e.target.closest('[data-close]')){invS.classList.remove('on');return}if(e.target.closest('#inv-go')){const r=($('#inv-rfc').value||'').trim().toUpperCase();if(!/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/.test(r)){toast('Revisa tu RFC (12 o 13 caracteres)');return}invS.classList.remove('on');toast('Solicitud de factura enviada al taller')}});
 $('#s-c5').addEventListener('click',e=>{const o=S.clientOrders.find(x=>x.folio===S.lastOrder)||S.clientOrders[0];if(!o)return;
   if(e.target.closest('#c-share')){const p=o.pi!=null?S.prod[o.pi]:null;const txt='Mi pedido BordaLink '+o.folio+': '+(o.q?(p?p.n:'Producto')+' × '+o.q:'Archivos digitales')+' — '+$f(o.tot)+(S.datos.nombre?' · '+S.datos.nombre:'');try{navigator.clipboard.writeText(txt).then(()=>toast('Copiado: pégalo en WhatsApp'),()=>toast('No se pudo copiar'))}catch(er){toast('No se pudo copiar')}}
+  const dlb=e.target.closest('[data-dl]');if(dlb){dlFile(o,dlb.dataset.dl,dlb);return}
+  if(e.target.closest('#c-dl')){const k=o.dig.find(d=>/prev|vec|embdtf|dtf/.test(d.k));if(k){dlFile(o,k.k==='vec'?'svg':'emb');return}}
   if(e.target.closest('#c-dl'))toast(o.dig.length?'Las descargas se activan cuando el taller entregue tus archivos (con servidor).':'Este pedido no incluye archivos digitales.');
   if(e.target.closest('#c-inv')){const sub=o.tot/1.16;invS.innerHTML='<div class="card inv"><div class="h1" style="font-size:19px">Factura · '+o.folio+'</div><div class="sub">'+esc(S.datos.nombre||'Taller BordaLink')+(S.datos.rfc?' · RFC '+esc(S.datos.rfc):'')+'</div><div class="qline"><span>Subtotal</span><b>'+$f(sub)+'</b></div><div class="qline"><span>IVA 16%</span><b>'+$f(o.tot-sub)+'</b></div><div class="qline tot"><span>Total</span><b>'+$f(o.tot)+'</b></div><div class="field" style="margin-top:12px"><label>Tu RFC para facturar</label><div class="inp"><input id="inv-rfc" placeholder="XAXX010101000" style="text-transform:uppercase"></div></div><div class="mini-l">La factura electrónica (CFDI) se timbra en la versión con servidor.</div><div class="btns"><button class="btn btn-main" id="inv-go">Solicitar factura</button><a class="lnk" data-close>Cerrar</a></div></div>';invS.classList.add('on')}
 });
