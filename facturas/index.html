@@ -194,7 +194,7 @@ const mesLabel=k=>{const[y,m]=k.split('-');return MESES[+m-1]+' '+y};
 const fechaCorta=f=>{const p=String(f||'').split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:esc(f)};
 const hoy=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 const ESTADOS=['Pendiente','Timbrada','Pagada','Cancelada'];
-let clientes=[],docs=[],cliSel=null,docDestino=null,quiero=null,ultimo=null,assets=null,sampleFn=null,attachTo=null,db=null,owner=false,modo='ver',facturas=[],comis={},pendRender=false,queues={},armed=null;
+let yaScroll=null,clientes=[],docs=[],cliSel=null,docDestino=null,quiero=null,ultimo=null,assets=null,sampleFn=null,attachTo=null,db=null,owner=false,modo='ver',facturas=[],comis={},pendRender=false,queues={},armed=null;
 
 function visibles(){const m=$('selMes').value;return facturas.filter(f=>!m||String(f.fecha||'').startsWith(m))}
 function suma(list,k){return r2(list.filter(f=>f.estado!=='Cancelada').reduce((a,f)=>a+(+f[k]||0),0))}
@@ -241,7 +241,7 @@ function renderGrid(){
   pendRender=false;
   const list=visibles().slice().sort((a,b)=>String(a.fecha).localeCompare(String(b.fecha)));
   $('gRows').innerHTML=list.map(f=>rowHtml(f,comis[f.id],false)).join('')+rowHtml({},null,true);
-  if(ultimo){const tr=[...$('gRows').rows].find(r=>r.dataset.id===ultimo);if(tr){tr.querySelectorAll('td').forEach(td=>td.style.boxShadow='inset 0 0 0 9999px rgb(255 214 0 / .35)');tr.scrollIntoView({block:'center'});const u=ultimo;setTimeout(()=>{if(ultimo===u)ultimo=null},8000)}}
+  if(ultimo){const tr=[...$('gRows').rows].find(r=>r.dataset.id===ultimo);if(tr){tr.querySelectorAll('td').forEach(td=>td.style.boxShadow='inset 0 0 0 9999px rgb(255 214 0 / .35)');if(yaScroll!==ultimo){tr.scrollIntoView({block:'center'});yaScroll=ultimo}const u=ultimo;setTimeout(()=>{if(ultimo===u)ultimo=null},8000)}}
   const coms=list.filter(f=>f.estado!=='Cancelada').map(f=>comis[f.id]||{});
   $('gFoot').innerHTML='<tr><td colspan="5">Total</td><td class="n">'+money(suma(list,'subtotal'))+'</td><td class="n">'+money(suma(list,'iva'))+'</td><td class="n">'+money(suma(list,'total'))+'</td><td></td><td class="n">'+money(r2(coms.reduce((a,c)=>a+(+c.comision||0),0)))+'</td><td colspan="6"></td></tr>';
   const sols=[...new Set(facturas.map(f=>f.solicita).filter(Boolean))],clis=[...new Set(clientes.map(c=>c.nombre).concat(facturas.map(f=>f.cliente)).filter(Boolean))];
@@ -343,14 +343,27 @@ function leerXml(xml){
 }
 function cargarScript(src){return new Promise((ok,no)=>{const e=document.createElement('script');e.src=src;e.onload=ok;e.onerror=no;document.head.appendChild(e)})}
 let pdfListo=null;
+const PDFB='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
 function pdfLib(){
-  const B='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
-  if(!pdfListo)pdfListo=cargarScript(B+'pdf.worker.min.js').then(()=>cargarScript(B+'pdf.min.js')).then(()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc=B+'pdf.worker.min.js';return window.pdfjsLib});
+  if(!pdfListo)pdfListo=cargarScript(PDFB+'pdf.min.js').then(()=>{
+    const lib=window.pdfjsLib;lib.GlobalWorkerOptions.workerSrc=PDFB+'pdf.worker.min.js';
+    try{lib.GlobalWorkerOptions.workerPort=new Worker(URL.createObjectURL(new Blob(['importScripts("'+PDFB+'pdf.worker.min.js");'],{type:'application/javascript'})))}catch(e){}
+    return lib;
+  }).catch(e=>{pdfListo=null;throw e});
   return pdfListo;
+}
+let pdfModoLento=false;
+async function abrirPdf(lib,bytes){
+  if(!pdfModoLento&&lib.GlobalWorkerOptions.workerPort){
+    try{return await conTiempo(lib.getDocument({data:bytes.slice(0),isEvalSupported:false}).promise,15000)}
+    catch(e){pdfModoLento=true;try{lib.GlobalWorkerOptions.workerPort.terminate()}catch(_){}lib.GlobalWorkerOptions.workerPort=null}
+  }
+  if(!window.pdfjsWorker)await cargarScript(PDFB+'pdf.worker.min.js');
+  return lib.getDocument({data:bytes,isEvalSupported:false}).promise;
 }
 async function leerPdfTexto(file){
   const lib=await pdfLib();
-  const pdf=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer()),isEvalSupported:false}).promise;
+  const pdf=await abrirPdf(lib,new Uint8Array(await file.arrayBuffer()));
   let out='';
   for(let i=1;i<=Math.min(pdf.numPages,4);i++){const pg=await pdf.getPage(i);const tc=await pg.getTextContent();out+=tc.items.map(t=>t.str+(t.hasEOL?'\n':' ')).join('')+'\n'}
   return{pdf,texto:out};
@@ -412,15 +425,11 @@ async function procesar(files){
         quiero=hoy().slice(0,7);ultimo=id;render();
       }
     }catch(e){aviso('No se pudo crear el renglón. Revisa tu conexión.');continue}
-    aviso('Guardando '+file.name+'…');
-    let archivo=null,motivo='';
-    if(assets){
-      try{const up=await conTiempo(assets.upload(file,{type:esXml?'text/plain':'application/pdf'}),60000);archivo={id:up.id,nombre:txt(file.name,120),tipo:esXml?'xml':'pdf'}}
-      catch(e){motivo=e&&e.code==='too_large'?'pesa más de 20 MB':e&&e.code==='quota_or_state'?'se llenó el espacio':e&&e.code==='timeout'?'tardó demasiado en subir':'no se pudo subir'}
-    }else motivo='esta vista no permite guardar archivos';
-    aviso('Leyendo los datos de '+file.name+'…');
-    let d={};
-    try{d=await conTiempo(esXml?file.text().then(leerXml):leerPdf(file),120000)}catch(e){}
+    aviso('Subiendo y leyendo '+file.name+'…');
+    let archivo=null,motivo='',d={};
+    const pSubir=assets?conTiempo(assets.upload(file,{type:esXml?'text/plain':'application/pdf'}),60000).then(up=>{archivo={id:up.id,nombre:txt(file.name,120),tipo:esXml?'xml':'pdf'}},e=>{motivo=e&&e.code==='too_large'?'pesa más de 20 MB':e&&e.code==='timeout'?'tardó demasiado en subir':'no se pudo subir'}):Promise.resolve(motivo='no hay permiso para guardar archivos');
+    const pLeer=conTiempo(esXml?file.text().then(leerXml):leerPdf(file),60000).then(x=>{d=x||{}},()=>{});
+    await Promise.all([pSubir,pLeer]);
     const leidos=['cliente','total','uuid'].filter(k=>d[k]).length;const esCsf=!!d.csf;
     try{
       const prev=facturas.find(x=>x.id===id)||{};const f=Object.assign({},prev);delete f.id;
@@ -455,6 +464,7 @@ const err=e=>({code:e&&(e.code||e.status)||'error',message:e&&e.message});
 function aFila(id,d){return{id,fecha:d.fecha||hoy(),solicita:d.solicita||'',cliente:d.cliente||'',rfc:d.rfc||'',concepto:d.concepto||'',folio:d.folio||'',uuid:d.uuid||'',estado:d.estado||'Pendiente',subtotal:r2(d.subtotal),iva:r2(d.iva),total:r2(d.total),cp:d.cp||'',archivo:d.archivo||null,constancia:d.constancia||null,actualizado:new Date().toISOString()}}
 function deFila(r){return{id:r.id,fecha:r.fecha,solicita:r.solicita||'',cliente:r.cliente||'',rfc:r.rfc||'',concepto:r.concepto||'',folio:r.folio||'',uuid:r.uuid||'',estado:r.estado,subtotal:Number(r.subtotal)||0,iva:Number(r.iva)||0,total:Number(r.total)||0,cp:r.cp||'',archivo:r.archivo,constancia:r.constancia}}
 async function setDoc(c,id,d){
+  ultimaEscritura=Date.now();
   if(c==='facturas'){
     const row=aFila(id,d);const {error}=await SB.from('fac_facturas').upsert(row);if(error)throw err(error);
     const k=facturas.findIndex(x=>x.id===id),nf=deFila(row);if(k>=0)facturas[k]=nf;else facturas.push(nf);render();
@@ -487,7 +497,7 @@ async function cargar(){
   if(owner){const r=await SB.from('fac_comisiones').select('*');const o={};(r.data||[]).forEach(x=>o[x.factura_id]={comPct:Number(x.pct)||0,comision:Number(x.monto)||0,comPagada:!!x.pagada});comis=o}
   render();
 }
-let tRec=null;const recargar=()=>{clearTimeout(tRec);tRec=setTimeout(cargar,400)};
+let tRec=null,ultimaEscritura=0;const recargar=()=>{if(Date.now()-ultimaEscritura<3000)return;clearTimeout(tRec);tRec=setTimeout(cargar,600)};
 async function entrar(){
   const {data:{session}}=await SB.auth.getSession();
   if(!session){$('login').hidden=false;$('app').hidden=true;$('lUser').focus();return}
@@ -496,7 +506,7 @@ async function entrar(){
   owner=perfil.rol==='dueno';$('quien').textContent=perfil.usuario;
   $('login').hidden=true;$('app').hidden=false;
   $('tabs').hidden=false;
-  if(owner){assets=storageAdapter;$('drop').hidden=false;$('dropCsf').hidden=false;$('cNuevo').hidden=false;irA('edit')}
+  if(owner){setTimeout(()=>pdfLib().catch(()=>{}),1500);assets=storageAdapter;$('drop').hidden=false;$('dropCsf').hidden=false;$('cNuevo').hidden=false;irA('edit')}
   else{$('drop').hidden=true;$('tEdit').hidden=true;$('tVer').textContent='Facturas';irA('ver')}
   await cargar();
   SB.channel('fac').on('postgres_changes',{event:'*',schema:'public',table:'fac_facturas'},recargar).on('postgres_changes',{event:'*',schema:'public',table:'fac_clientes'},recargar).on('postgres_changes',{event:'*',schema:'public',table:'fac_docs'},recargar).subscribe();
