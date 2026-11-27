@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Control de facturas</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f4e79">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Facturas">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -85,6 +90,8 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
     <label style="display:block;font-size:14px;color:var(--mute)">Contraseña<input id="lPass" type="password" autocomplete="current-password" style="display:block;width:100%;font:inherit;font-size:16px;padding:10px;margin:4px 0 16px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)"></label>
     <button style="width:100%;font:inherit;font-weight:700;min-height:46px;border:0;border-radius:6px;background:var(--head);color:#fff;cursor:pointer">Entrar</button>
     <p class="status" id="lMsg"></p>
+    <button type="button" class="btn instalar" hidden style="width:100%;margin-top:6px">Instalar la app en este dispositivo</button>
+    <p class="note ios-tip" hidden>En iPhone: toca <b>Compartir</b> y luego <b>Agregar a inicio</b> para tenerla como app.</p>
   </form>
 </section>
 <div id="app" hidden>
@@ -94,7 +101,7 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
     <div>
       <h1>Control de facturas</h1>
       <p class="note" id="sub">Cargando…</p>
-      <p class="note" style="margin-top:2px">Usuario: <b id="quien"></b> · <a href="#" id="bPass" style="color:var(--head)">Cambiar contraseña</a> · <a href="#" id="bSalir" style="color:var(--head)">Salir</a></p>
+      <p class="note" style="margin-top:2px">Usuario: <b id="quien"></b> · <a href="#" id="bPass" style="color:var(--head)">Cambiar contraseña</a> · <a href="#" id="bSalir" style="color:var(--head)">Salir</a> <button type="button" class="btn instalar" hidden style="min-height:32px;padding:0 10px;font-size:13px;margin-left:6px">Instalar app</button></p>
     </div>
     <div class="bar" style="margin:0">
       <label>Mes<select id="selMes"></select></label>
@@ -620,6 +627,15 @@ dc.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefa
 ['dragleave','drop'].forEach(t=>dc.addEventListener(t,()=>dc.classList.remove('over')));
 dc.addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer.files[0];if(f)subirCsf(f)});
 $('fileCsf').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)subirCsf(f)});
+
+/* ---------- Instalar como app ---------- */
+let instalarEvt=null;
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instalarEvt=e;document.querySelectorAll('.instalar').forEach(b=>b.hidden=false)});
+document.querySelectorAll('.instalar').forEach(b=>b.addEventListener('click',async()=>{if(!instalarEvt)return;instalarEvt.prompt();await instalarEvt.userChoice.catch(()=>{});instalarEvt=null;document.querySelectorAll('.instalar').forEach(x=>x.hidden=true)}));
+window.addEventListener('appinstalled',()=>document.querySelectorAll('.instalar').forEach(x=>x.hidden=true));
+if(/iphone|ipad|ipod/i.test(navigator.userAgent)&&!standalone)document.querySelectorAll('.ios-tip').forEach(x=>x.hidden=false);
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();
 entrar();
 }
